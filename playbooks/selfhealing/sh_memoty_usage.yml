@@ -1,0 +1,36 @@
+---
+- name: Clear cache and enable swap
+  hosts: your_server_group
+  become: true
+
+  tasks:
+    - name: Clear Page Cache
+      ansible.builtin.shell:
+        cmd: sync && echo 1 > /proc/sys/vm/drop_caches
+      args:
+        warn: false  # Utilize warn: false para suprimir avisos de uso de shell.
+
+    - name: Create Swap File
+      ansible.builtin.command:
+        cmd: fallocate -l 1G /swapfile
+        creates: /swapfile
+      become: true
+
+    - name: Set Permissions for Swap File
+      ansible.builtin.file:
+        path: /swapfile
+        mode: '0600'
+        owner: root
+        group: root
+
+    - name: Format Swap File
+      ansible.builtin.shell:
+        cmd: mkswap /swapfile
+      args:
+        warn: false
+
+    - name: Enable Swap File
+      ansible.builtin.shell:
+        cmd: swapon /swapfile
+      args:
+        warn: false
