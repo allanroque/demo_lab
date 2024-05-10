@@ -14,13 +14,9 @@
       register: largest_files
       changed_when: false
 
-    - name: Display largest files in a clean list format
+    - name: Display largest files
       ansible.builtin.debug:
-        msg: |
-          Largest files in {{ item.item }}:
-          {% for line in item.stdout_lines %}
-          - {{ line.split("\t")[1] }} (Size: {{ line.split("\t")[0] }})
-          {% endfor %}
+        msg: "{{ item.stdout_lines }}"
       loop: "{{ largest_files.results }}"
       when: item.stdout_lines is defined
 
@@ -34,4 +30,8 @@
         path: "{{ item }}"
         state: absent
       loop:
+#        - "/tmp/*"
+#        - "/var/tmp/*"
+#        - "/var/log/app.log"
+#       - "/var/cache/dnf/*"
         - "/var/log/app.log"
