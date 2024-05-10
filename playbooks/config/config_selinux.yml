@@ -3,18 +3,12 @@
   hosts: all
   become: true
   tasks:
-    - name: Ensure SELinux is not disabled
-      ansible.builtin.selinux:
-        state: enforcing  # Opções: enforcing, permissive, disabled
 
-    - name: Set SELinux policy to targeted
-      ansible.builtin.selinux:
+    - name: Enable SELinux
+      ansible.posix.selinux:
         policy: targeted
-
-    - name: Relabel file contexts
-      ansible.builtin.command: restorecon -Rv /
-      when: ansible_selinux.status != "disabled"
-
+        state: enforcing
+        
     - name: Verify SELinux status
       ansible.builtin.command: getenforce
       register: selinux_status
