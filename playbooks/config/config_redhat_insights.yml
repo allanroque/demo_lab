@@ -1,0 +1,23 @@
+---
+- name: Configure Red Hat Insights
+  hosts: all
+  become: true  # Necessário para instalar pacotes e executar comandos como root
+  tasks:
+    - name: Ensure the Insights client is installed
+      dnf:
+        name: insights-client
+        state: present
+
+    - name: Register the system to Red Hat Insights
+      command: insights-client --register
+      register: insights_registration
+      changed_when: "'Successfully registered' in insights_registration.stdout"
+      ignore_errors: true
+
+    - name: Verify registration
+      command: insights-client --status
+      register: insights_status
+
+    - name: Show registration status
+      debug:
+        msg: "{{ insights_status.stdout_lines }}"

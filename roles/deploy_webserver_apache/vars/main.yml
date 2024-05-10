@@ -1,0 +1,3 @@
+---
+# vars file for deploy_webserver_apache
+apache_test_message: "Test apache e automation"

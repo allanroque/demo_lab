@@ -1,0 +1,61 @@
+---
+- name: Delete DNS A and PTR records
+  hosts: localhost
+  gather_facts: false
+  vars:
+    ipa_host: "
+    ipa_pass: ""
+    dns_zone: "aroque.com.br"
+    reverse_zone: "100.168.192.in-addr.arpa"
+    record_state: "absent"
+    dns_server: "{{ ipa_host }}"
+    host_name: "{{ host_fqdn.split('.')[0] }}"
+    host_domain: "{{ dns_zone }}"
+    host_fqdn: "{{ host_name }}.{{ host_domain }}"
+    host_ip: "192.168.100.60"
+    net_prefix: "192.168.100.0"
+    net_cidr: "24"
+
+  tasks:
+    - name: Debug variable host_fqdn
+      debug:
+        var: host_fqdn
+
+    - name: Discover IP address of remote host
+      set_fact:
+        host_ip: "{{ lookup('dig', host_fqdn + '.', '@' + dns_server, 'qtype=A') }}"
+
+    - name: Debug variable host_ip
+      debug:
+        var: host_ip
+
+    - name: Remove reverse DNS record
+      ipa_dnsrecord:
+        ipa_host: "{{ ipa_host }}"
+        ipa_pass: "{{ ipa_pass }}"
+        zone_name: "{{ reverse_zone }}"
+        record_name: "{{ host_ip.split('.')[3] }}"
+        record_type: 'PTR'
+        record_value: "{{ host_fqdn }}."
+        state: "{{ record_state }}"
+        validate_certs: no
+
+    - name: Remove forward DNS record
+      ipa_dnsrecord:
+        ipa_host: "{{ ipa_host }}"
+        ipa_pass: "{{ ipa_pass }}"
+        zone_name: "{{ dns_zone }}"
+        record_name: "{{ host_name }}"
+        record_type: 'A'
+        record_value: "{{ host_ip }}"
+        state: "{{ record_state }}"
+        validate_certs: no
+
+    - name: Set host_ip as fact for future use in playbook
+      set_fact:
+        host_ip: "{{ host_ip }}"
+
+    - name: Export host_ip to another job template
+      set_stats:
+        data:
+          host_ip: "{{ host_ip }}"

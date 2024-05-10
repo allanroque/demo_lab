@@ -1,0 +1,33 @@
+---
+- name: Manage Basic Packages on System
+  hosts: all
+  become: true
+  vars:
+    pkgs_to_install:
+      - bind-utils
+      - net-tools
+      - vim
+      - chrony
+      - wget
+      - sos
+      - yum-utils
+      - sysstat
+      - tar
+      - unzip
+    pkgs_to_remove:
+      - telnet
+
+  tasks:
+    - name: Install important packages
+      yum:
+        name: "{{ pkgs_to_install }}"
+        state: present
+      tags: 
+        - packages
+
+    - name: Remove unwanted packages
+      yum:
+        name: "{{ pkgs_to_remove }}"
+        state: absent
+      tags:
+        - packages

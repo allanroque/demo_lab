@@ -1,0 +1,25 @@
+---
+- name: Install and Configure QEMU Guest Agent
+  hosts: all
+  become: true
+  tasks:
+    - name: Install QEMU Guest Agent
+      ansible.builtin.dnf:
+        name: qemu-guest-agent
+        state: present
+
+    - name: Ensure QEMU Guest Agent is enabled and running
+      ansible.builtin.systemd:
+        name: qemu-guest-agent
+        state: started
+        enabled: true
+        daemon_reload: yes
+
+    - name: Gather facts about all active services to check qemu-guest-agent
+      ansible.builtin.service_facts:
+
+    - name: Display QEMU Guest Agent status
+      ansible.builtin.debug:
+        msg: >
+          QEMU Guest Agent is {{ 'running' if ('qemu-guest-agent.service' in services and
+          services['qemu-guest-agent.service'].status == 'running') else 'stopped or not installed' }}

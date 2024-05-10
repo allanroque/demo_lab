@@ -1,0 +1,53 @@
+---
+- name: Create DNS A and PTR records
+  hosts: localhost
+  gather_facts: false
+  vars:
+    ipa_host: ""
+    ipa_pass: ""
+    dns_zone: "aroque.com.br"
+    reverse_zone: "100.168.192.in-addr.arpa"
+    record_state: "present"
+    host_fqdn: "{{ host_name }}.{{ dns_zone }}"
+    host_name: "{{ host_fqdn.split('.')[0] }}"
+    host_domain: "{{ dns_zone }}"
+    host_ip: "192.168.100.XX"  # Substitua XX pelo número de IP específico
+    net_prefix: "192.168.100.0"
+    net_cidr: "24"
+    dns_server: "192.168.100.10"
+
+  tasks:
+    - name: Create DNS A record
+      community.general.ipa_dnsrecord:
+        ipa_host: "{{ ipa_host }}"
+        ipa_pass: "{{ ipa_pass }}"
+        zone_name: "{{ dns_zone }}"
+        validate_certs: false
+        record_name: "{{ host_name }}"
+        record_type: A
+        record_value: "{{ host_ip }}"
+        state: "{{ record_state }}"
+
+    - name: Create DNS PTR record
+      community.general.ipa_dnsrecord:
+        ipa_host: "{{ ipa_host }}"
+        ipa_pass: "{{ ipa_pass }}"
+        zone_name: "{{ reverse_zone }}"
+        validate_certs: false
+        record_name: "{{ host_ip.split('.')[-1] }}"
+        record_type: PTR
+        record_value: "{{ host_fqdn }}."
+        state: "{{ record_state }}"
+
+    - name: Discover IP address of remote host
+      set_fact:
+        host_ip: "{{ lookup('dig', '{{ host_fqdn }}.', '@' + '{{ dns_server }}', 'qtype=A') }}"
+
+    - name: Debug variable host_ip
+      debug:
+        var: host_ip
+
+    - name: Export host_ip to another job template
+      set_stats:
+        data:
+          host_ip: "{{ host_ip }}"

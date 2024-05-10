@@ -1,0 +1,4 @@
+---
+- name: Get IP address
+  hosts: localhost
+  gather_facts: false

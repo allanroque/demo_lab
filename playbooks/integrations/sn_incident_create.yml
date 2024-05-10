@@ -1,0 +1,37 @@
+---
+- name: Automate SNOW - Incident Create
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/main.yml
+  collections:
+    - servicenow.itsm
+
+  tasks:
+    # Always give your tasks a useful name
+      # This task leverages the 'incident' module from the 'itsm' collection 
+      # within the 'servicenow' namespace
+    - name: Create incident
+      servicenow.itsm.incident:
+        state: new
+        instance:
+          host: "{{ sn_host }}"
+          username: "{{ sn_username }}"
+          password: "{{ sn_password }}"
+        caller: "{{ lookup('env', 'SN_USERNAME') }}"
+        short_description: "{{ eda_event }}"
+        description: "Ansible successfully created a new incident! for {{ eda_host }} related to event {{ eda_event }}"
+        impact: low
+        urgency: low
+      register: new_incident
+
+    - set_fact:
+        sn_incident_number: "{{ new_incident.record.number }}"
+
+    - debug:
+        var: new_incident.record.number
+
+    - name: Set incident number
+      set_stats:
+        data:
+          sn_incident_number: "{{ new_incident.record.number }}"

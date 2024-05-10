@@ -1,0 +1,6 @@
+---
+- name: Deploy webserver apache
+  hosts: apache
+  gather_facts: true
+  roles:
+    - role: ../roles/deploy_webserver_apache

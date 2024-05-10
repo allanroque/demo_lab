@@ -1,0 +1,67 @@
+---
+# tasks file for deploy_webserver_apache
+- name: latest Apache version installed
+  yum:
+    name: httpd
+    state: latest
+
+- name: latest firewalld version installed
+  yum:
+    name: firewalld
+    state: latest
+
+- name: firewalld enabled and running
+  service:
+    name: firewalld
+    enabled: true
+    state: started
+
+- name: firewalld permits http service
+  firewalld:
+    service: http
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Ensure proper Apache configuration
+  copy:
+    src: httpd.conf
+    dest: /etc/httpd/conf/httpd.conf
+  notify: apache-restart
+
+- name: Ensure proper Apache configuration
+  copy:
+    src: logo-rh-ansible-automation.png
+    dest: /var/www/html/logo-rh-ansible-automation.png
+
+- name: deploy index.html
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify: apache-restart
+
+- name: Apache enabled and running
+  service:
+    name: httpd
+    enabled: true
+    state: started
+
+- name: Test page link
+  uri:
+    url: "http://{{ ansible_fqdn}}"
+    return_content: no
+    status_code: 200
+  register: result
+
+- name: Display result
+  debug:
+    msg: "O retorno do link foi {{ result.status }}"
+
+- name: Fail if return code is not 200
+  fail:
+    msg: "HTTP return code is not 200"
+  when: result.status != 200
+
+- name: Access page
+  debug:
+    msg: "http://{{ ansible_fqdn}}"

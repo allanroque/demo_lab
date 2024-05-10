@@ -1,0 +1,19 @@
+---
+- name: Generic Package Installation or Upgrade
+  hosts: all
+  become: true
+  vars:
+    package_name: wget
+    package_state: present
+
+  tasks:
+    - name: Manage packages generically
+      yum:
+        name: "{{ package_name }}"
+        state: "{{ package_state }}"
+      when: ansible_facts['os_family'] == "RedHat"
+      register: package_action
+
+    - name: Show installation or update status
+      debug:
+        msg: "The package '{{ package_name }}' has been {{ package_action.changed | ternary('installed/updated', 'already up-to-date') }}."

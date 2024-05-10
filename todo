@@ -1,0 +1,66 @@
+To Do:
+Ad Hoc
+1. Ad Hoc
+Automatizações que são geralmente executadas sob demanda para tarefas gerais e operacionais.
+Validação de SSL
+health check
+
+2. Gerenciamento de Configuração
+Configurações essenciais do sistema, segurança e gerenciamento de serviços e pacotes.
+
+Configuração de SSH
+Agente de monitoração
+Backup automatizado de servidores
+
+3. Deployment
+Automação relacionada ao deployment de aplicações e serviços.
+
+Deploy do Apache
+Deploy do Nginx
+Instalação de database
+Conteúdo de aplicação novo deployment
+Instalação de JBoss
+Automação OpenShift
+
+4. Orquestração
+Automações que envolvem a orquestração de infraestrutura e serviços de rede.
+
+Criar entrada DNS
+Deletar entrada DNS
+Criar IP no IPAM
+Deletar IP no IPAM
+
+5. Integração com ITSM
+Integrações com ferramentas de gerenciamento de serviços de TI para automação de processos de mudança e incidentes.
+
+Abrir Change no ServiceNow
+Fechar Change no ServiceNow
+Abrir incidente no ServiceNow
+Fechar incidente no ServiceNow
+
+6 - Provisionamento
+criar servidores
+
+Doing:
+
+Done:
+
+Ad Hoc
+Execução de comandos genéricos
+Instalação de pacotes genéricos
+Restart de serviços genéricos
+
+2. Gerenciamento de Configuração
+Configuração de SELinux
+Configuração de pacotes básicos
+Remoção de pacotes proibidos
+Start de serviços permitidos
+Stop de serviços não permitidos
+Configuração estrutura log ansible
+Configuração de Cockpit
+Configuração do MOTD (Message of the Day)
+Configuração chrony
+Configuração de Red Hat Insights
+Agente de virtualização
+
+Orquestração

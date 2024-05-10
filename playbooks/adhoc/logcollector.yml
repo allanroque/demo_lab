@@ -1,0 +1,34 @@
+---
+- name: Collect Last Error Logs
+  hosts: all
+  become: true  # Necessário para acessar arquivos de log do sistema
+  tasks:
+    - name: Check for the presence of /var/log/syslog (Debian-based)
+      ansible.builtin.stat:
+        path: /var/log/syslog
+      register: syslog_stat
+
+    - name: Check for the presence of /var/log/messages (RHEL-based)
+      ansible.builtin.stat:
+        path: /var/log/messages
+      register: messages_stat
+
+    - name: Gather last 100 error entries from /var/log/syslog
+      ansible.builtin.shell: "grep -i 'error\\|fail' /var/log/syslog | tail -100"
+      when: syslog_stat.stat.exists
+      register: syslog_errors
+
+    - name: Gather last 100 error entries from /var/log/messages
+      ansible.builtin.shell: "grep -i 'error\\|fail' /var/log/messages | tail -100"
+      when: messages_stat.stat.exists
+      register: messages_errors
+
+    - name: Show errors from /var/log/syslog
+      debug:
+        msg: "{{ syslog_errors.stdout }}"
+      when: syslog_errors.stdout
+
+    - name: Show errors from /var/log/messages
+      debug:
+        msg: "{{ messages_errors.stdout }}"
+      when: messages_errors.stdout

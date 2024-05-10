@@ -1,0 +1,6 @@
+---
+- name: Deploy database postgresql
+  hosts: nginx
+  gather_facts: true
+  roles:
+    - role: ../roles/deploy_db_postgresql

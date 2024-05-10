@@ -1,0 +1,23 @@
+---
+# tasks file for deploy_webserver_nginx
+- name: Install NGINX package
+  yum:
+    name: nginx
+    state: present
+
+- name: Ensure proper nginx configuration
+  copy:
+    src: logo-rh-ansible-automation.png
+    dest: /usr/share/nginx/html/logo-rh-ansible-automation.png
+
+- name: Deploy demo page
+  template:
+    src: templates/index.html.j2
+    dest: /usr/share/nginx/html/index.html
+  notify: Restart nginx server
+
+- name: Start and enable NGINX service
+  service:
+    name: nginx
+    state: started
+    enabled: true

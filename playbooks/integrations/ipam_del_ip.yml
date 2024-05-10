@@ -1,0 +1,4 @@
+---
+- name: Delete IP address IPAM
+  hosts: localhost
+  gather_facts: false

@@ -1,0 +1,6 @@
+---
+- name: Deploy webserver nginx
+  hosts: nginx
+  gather_facts: true
+  roles:
+    - role: ../roles/deploy_webserver_nginx
