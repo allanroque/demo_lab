@@ -58,7 +58,7 @@
 #  INSTANCE DOWN  #
 ###################
 
-    - name: High Memory Usage
+    - name: Instance Down
       condition: >
         event.alert.labels.alertname == "InstanceDown" and
         event.alert.status == "firing" and
