@@ -1,6 +1,6 @@
 ---
 - name: Clear cache and enable swap
-  hosts: your_server_group
+  hosts: all
   become: true
 
   tasks:
