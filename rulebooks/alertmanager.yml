@@ -31,4 +31,15 @@
       action:
         debug:
 
+    - name: High Filesystem Usage
+      condition: event.alert.labels.alertname == "HighFilesystemUsage" and event.alert.status == "firing"
+      action:
+        run_job_template:
+          name: Config SELinux Settings
+          organization: Default
+          job_args:
+            limit: "{{ event.meta.hosts }}"
+
+
+
 # test alertmanager - curl -X POST -H "Content-Type: application/json" -d '{"receiver":"webhooks","status":"firing","alerts":[{"status":"firing","labels":{"alertname":"selinux disabled"},"annotations":{"description":"SELinux is disabled"}}]}' http://192.168.100.112:5050/prometheus
