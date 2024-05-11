@@ -1,0 +1,17 @@
+---
+- name: Journald events
+  hosts: all
+  sources:
+    - name: Match all messages
+      ansible.eda.journald:
+        match: "ALL"
+  rules:
+    - name: Print and debug all journald events
+      condition: event.journald is defined
+      actions:
+        - print_event:
+            pretty: true
+            var_root: journald.message  # Mostra a mensagem do log de forma legível
+
+#        - debug:
+#            msg: "enabled on: {{ event.meta.hosts }}"  # Mensagem de debug com hosts relacionados
