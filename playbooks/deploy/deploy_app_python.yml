@@ -1,6 +1,6 @@
 ---
 - name: Deploy appication
-  hosts: 
+  hosts: APPLICATION
   gather_facts: false
   become: true
   vars:
