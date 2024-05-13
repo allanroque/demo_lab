@@ -25,6 +25,9 @@
         close_code: "{{ sn_close_code }}"
         close_notes: "{{ sn_close_notes }}"
         number: "{{ sn_incident_number }}"
+        other:
+          work_notes: |
+            "{{ sn_close_notes }}"
 
 
     - name: Self-Healing details
