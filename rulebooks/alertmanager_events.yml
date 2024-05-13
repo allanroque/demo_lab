@@ -78,3 +78,17 @@
       condition: event.alert is defined
       action:
         debug:
+
+###############
+# HTTP APACHE #
+################
+
+    - name: Respond to HTTP Service Down Alert
+      condition: event.alert.labels.job == "http" and event.alert.status == "firing"
+      action:
+        run_job_template:
+          name: Respond to HTTP Service Down
+          organization: Default
+          job_args:
+            limit: "{{ event.meta.hosts }}"
+

@@ -2,8 +2,12 @@
 - name: Automate SNOW - Incident Closed
   hosts: localhost
   connection: local
-  vars_files:
-    - vars/main.yml
+  vars:
+    sn_close_code: "Closed via EDA Ansible"
+    sn_close_notes: "This incident has been resolved through automated means via Ansible, Job ID: https://192.168.100.111/#/jobs/playbook/{{ ac_job_id | default('0') }}/output. As a result, the ticket will now be marked as closed."
+    sn_incident_number: "{{ sn_incident_number | default('0') }}"
+#  vars_files:
+#    - vars/main.yml
   collections:
     - servicenow.itsm
 
@@ -18,6 +22,6 @@
           username: "{{ sn_username }}"
           password: "{{ sn_password }}"
         state: closed
-        close_code: "Solved (Permanently)"
-        close_notes: "This incident has been resolved through automated means via Ansible, and as a result, the ticket will now be marked as closed."
+        close_code: "{{ sn_close_code }}"
+        close_notes: "{{ sn_close_notes }}"
         number: "{{ sn_incident_number }}"
