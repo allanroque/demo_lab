@@ -7,8 +7,6 @@
     - name: Clear Page Cache
       ansible.builtin.shell:
         cmd: sync && echo 1 > /proc/sys/vm/drop_caches
-      args:
-        warn: false  # Utilize warn: false para suprimir avisos de uso de shell.
 
     - name: Create Swap File
       ansible.builtin.command:
@@ -26,14 +24,10 @@
     - name: Format Swap File
       ansible.builtin.shell:
         cmd: mkswap /swapfile
-      args:
-        warn: false
 
     - name: Enable Swap File
       ansible.builtin.shell:
         cmd: swapon /swapfile
-      args:
-        warn: false
 
     - name: Set Job ID number
       set_stats:
