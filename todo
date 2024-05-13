@@ -1,3 +1,7 @@
+NOTA:
+# test alertmanager - curl -X POST -H "Content-Type: application/json" -d '{"receiver":"webhooks","status":"firing","alerts":[{"status":"firing","labels":{"alertname":"selinux disabled"},"annotations":{"description":"SELinux is disabled"}}]}' http://192.168.100.112:5050/prometheus
+# coleta curl http://192.168.100.21:9100/metrics |grep xxx
+
 To Do:
 Ad Hoc
 1. Ad Hoc

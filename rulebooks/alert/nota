@@ -1,1 +1,0 @@
-# test alertmanager - curl -X POST -H "Content-Type: application/json" -d '{"receiver":"webhooks","status":"firing","alerts":[{"status":"firing","labels":{"alertname":"selinux disabled"},"annotations":{"description":"SELinux is disabled"}}]}' http://192.168.100.112:5050/prometheus
