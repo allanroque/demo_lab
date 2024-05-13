@@ -1,0 +1,24 @@
+---
+- name: Capture alertmanager alerts
+  hosts: localhost
+  sources:
+    - ansible.eda.alertmanager:
+        host: 0.0.0.0
+        port: 5050
+        data_alerts_path: alerts
+        data_host_path: labels.instance
+        data_path_separator: .
+        skip_original_data: true
+
+  rules:
+    - name: Instance Down
+      condition: >
+        event.alert.labels.alertname == "InstanceDown" and
+        event.alert.status == "firing" and
+        (event.meta.hosts == "web01.aroque.com.br" or event.meta.hosts == "web2.aroque.com.br")
+      action:
+        run_workflow_template:
+          name: SH High Memory Usage
+          organization: Default
+          job_args:
+            limit: "{{ event.meta.hosts }}"
