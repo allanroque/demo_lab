@@ -3,8 +3,8 @@
   hosts: localhost
   connection: local
   vars:
-    sn_close_code: "Closed via EDA Ansible"
-    sn_close_notes: "This incident has been resolved through automated means via Ansible, Job ID: https://192.168.100.111/#/jobs/playbook/{{ ac_job_id | default('0') }}/output. As a result, the ticket will now be marked as closed."
+    sn_close_code: "Solved (Workaround)"
+    sn_close_notes: "This incident has been resolved through automated means via EDA Ansible, Job ID: https://192.168.100.111/#/jobs/playbook/{{ ac_job_id | default('0') }}/output. As a result, the ticket will now be marked as closed."
     sn_incident_number: "{{ sn_incident_number | default('0') }}"
 #  vars_files:
 #    - vars/main.yml
