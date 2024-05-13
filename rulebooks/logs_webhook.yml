@@ -7,6 +7,6 @@
         port: 5000
   rules:
     - name: Capture all other events from this source
-      condition: event is defined
+      condition: event.fact is defined
       action:
         debug:
