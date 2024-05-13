@@ -6,7 +6,7 @@
   tasks:
     - name: Clear Page Cache
       ansible.builtin.shell:
-        cmd: sync && echo 1 > /proc/sys/vm/drop_caches
+        cmd: sync && echo 3 > /proc/sys/vm/drop_caches
 
     - name: Create Swap File
       ansible.builtin.command:
@@ -30,6 +30,10 @@
       ansible.builtin.shell:
         cmd: swapon /swapfile
       ignore_errors: true
+
+    - name: Clear Page Cache
+      ansible.builtin.shell:
+        cmd: sync && echo 3 > /proc/sys/vm/drop_caches
 
     - name: Set Job ID number
       set_stats:
