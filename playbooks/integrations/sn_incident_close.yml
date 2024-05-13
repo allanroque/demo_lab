@@ -18,9 +18,9 @@
     - name: Closed incident
       servicenow.itsm.incident:
         instance:
-          host: "{{ sn_host }}"
-          username: "{{ sn_username }}"
-          password: "{{ sn_password }}"
+          host: "{{ snow_instance }}"
+          username: "{{ snow_username }}"
+          password: "{{ snow_password }}"
         state: closed
         close_code: "{{ sn_close_code }}"
         close_notes: "{{ sn_close_notes }}"
