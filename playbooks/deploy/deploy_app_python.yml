@@ -1,0 +1,45 @@
+---
+- name: Deploy appication
+  hosts: 
+  gather_facts: false
+  become: true
+  vars:
+    # red, green, blue, ansiblue, pink, darkblue
+    color:          "green"
+
+    # these vars are populated based on gitea eavents
+    # if the incoming git event is that of a pull request,
+    # set the port to 8081 to simulate deployment in dev
+    host_port:      "{{ '8081' if ansible_eda.event.etype == 'pull_request' else '8080'}}"
+    # app runs on 8080 so don't change unless app.py modified and image pushed
+    container_port: 8080
+    # if the incoming git event is that of a pull request,
+    # set the name of the container to reflect a dev deployment
+    container_name: "{{ 'colors-dev' if ansible_eda.event.etype == 'pull_request' else 'colors' }}"
+    repo_pusher:    "{{ ansible_eda.event.eauthor }}"
+    repo_ref:       "{{ ansible_eda.event.eref }}"
+    
+  tasks:
+    - name: Podman install
+      ansible.builtin.package:
+        name: podman
+        state: present
+  
+    - name: Create a color container
+      containers.podman.podman_container:
+        name: "{{ container_name }}"
+        image: quay.io/acme_corp/eda-app:suncavanaugh
+        state: started
+        recreate: true
+        network: bridge
+        ports:
+            - "{{ host_port }}:{{ container_port }}"
+        env:
+            APP_COLOR: "{{ color }}"
+            PUSHER: "{{ repo_pusher }}"
+            GITREF: "{{ repo_ref }}"
+      register: container
+
+    - name: Print container
+      debug:
+        var: container
