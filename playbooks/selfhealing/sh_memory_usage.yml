@@ -24,10 +24,12 @@
     - name: Format Swap File
       ansible.builtin.shell:
         cmd: mkswap /swapfile
+      ignore_errors: true
 
     - name: Enable Swap File
       ansible.builtin.shell:
         cmd: swapon /swapfile
+      ignore_errors: true
 
     - name: Set Job ID number
       set_stats:
