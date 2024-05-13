@@ -34,3 +34,8 @@
         cmd: swapon /swapfile
       args:
         warn: false
+
+    - name: Set Job ID number
+      set_stats:
+        data:
+          ac_job_id: "{{ awx_job_id }}"

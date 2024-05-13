@@ -1,0 +1,22 @@
+---
+- name: Disable and remove swap file
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Disable Swap File
+      ansible.builtin.shell:
+        cmd: swapoff /swapfile
+      args:
+        warn: false
+
+    - name: Remove Swap File
+      ansible.builtin.file:
+        path: /swapfile
+        state: absent
+
+    - name: Clearing leftover in-memory swap data
+      ansible.builtin.shell:
+        cmd: echo 3 > /proc/sys/vm/drop_caches
+      args:
+        warn: false  # Utilize warn: false para suprimir avisos de uso de shell.

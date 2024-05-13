@@ -19,3 +19,12 @@
           organization: Default
           job_args:
             limit: "{{ event.meta.hosts }}"
+
+    - name: Low Memory Usage
+      condition: event.alert.labels.alertname == "HighMemoryUsage" and event.alert.status == "resolved"
+      action:
+        run_job_template:
+          name: SH Low Memory Usage
+          organization: Default
+          job_args:
+            limit: "{{ event.meta.hosts }}"

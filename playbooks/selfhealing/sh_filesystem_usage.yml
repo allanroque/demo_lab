@@ -30,8 +30,13 @@
         path: "{{ item }}"
         state: absent
       loop:
-#        - "/tmp/*"
-#        - "/var/tmp/*"
-#        - "/var/log/app.log"
-#       - "/var/cache/dnf/*"
+        - "/tmp/*"
+        - "/var/tmp/*"
         - "/var/log/app.log"
+        - "/var/cache/dnf/*"
+        - "/var/log/app.log"
+
+    - name: Set Job ID number
+      set_stats:
+        data:
+          ac_job_id: "{{ awx_job_id }}"
