@@ -25,3 +25,8 @@
         close_code: "{{ sn_close_code }}"
         close_notes: "{{ sn_close_notes }}"
         number: "{{ sn_incident_number }}"
+
+
+    - name: Self-Healing details
+      debug:
+        msg: "https://192.168.100.111/#/jobs/playbook/{{ ac_job_id | default('0') }}/output"
