@@ -8,8 +8,8 @@
         port: 5000
   ## Define the conditions we are looking for
   rules:
-    - name: Say Hello
-      condition: event.payload.message == "Ansible is super cool"
-  ## Define the action we should take should the condition be met
+    - name: Debug all received events
+      condition: event.payload is defined  # Condição para verificar se existe algum dado no payload
       action:
         debug:
+          msg: "Received data: {{ event.payload }}"
