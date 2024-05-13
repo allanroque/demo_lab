@@ -6,10 +6,11 @@
     - ansible.eda.webhook:
         host: 0.0.0.0
         port: 5000
+      filters:
+        - ansible.eda.dashes_to_underscores:
   ## Define the conditions we are looking for
   rules:
     - name: Debug all received events
       condition: event.payload is defined  # Condição para verificar se existe algum dado no payload
       action:
         debug:
-          msg: "Received data: {{ event.payload }}"
