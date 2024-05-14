@@ -8,44 +8,34 @@
       ansible.builtin.file:
         path: /opt/gitea
         state: directory
+        owner: 1000
+        group: 1000
+        mode: '0755'
 
     - name: Create Gitea data directory
       ansible.builtin.file:
         path: /opt/gitea/data
         state: directory
+        owner: 1000
+        group: 1000
+        mode: '0755'
 
     - name: Create Gitea custom configuration directory
       ansible.builtin.file:
         path: /opt/gitea/custom
         state: directory
+        owner: 1000
+        group: 1000
+        mode: '0755'
 
     - name: Create Gitea log directory
       ansible.builtin.file:
         path: /opt/gitea/log
         state: directory
-
-    - name: Create Podman Compose file for Gitea
-      ansible.builtin.copy:
-        dest: /opt/gitea/podman-compose.yml
-        content: |
-          version: "3"
-
-          services:
-            server:
-              image: docker.io/gitea/gitea:latest
-              container_name: gitea
-              restart: always
-              environment:
-                - USER_UID=1000
-                - USER_GID=1000
-              volumes:
-                - /opt/gitea/data:/data
-                - /opt/gitea/custom:/app/gitea/custom
-                - /opt/gitea/log:/app/gitea/log
-              ports:
-                - "3000:3000"
-                - "2222:22"
-
+        owner: 1000
+        group: 1000
+        mode: '0755'
+        
     - name: Start Gitea container with Podman Compose
       ansible.builtin.command: podman-compose -f /opt/gitea/podman-compose.yml up -d
       args:

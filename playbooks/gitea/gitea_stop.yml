@@ -1,0 +1,10 @@
+---
+- name: Stop Gitea Podman container
+  hosts: hyper01.aroque.com.br
+  gather_facts: false
+  tasks:
+    - name: Stop Gitea container with Podman Compose
+      ansible.builtin.command: podman-compose -f /opt/gitea/podman-compose.yml stop
+      args:
+        chdir: /opt/gitea
+      ignore_errors: true
