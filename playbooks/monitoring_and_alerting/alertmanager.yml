@@ -15,7 +15,7 @@
 - name: Run Alertmanager container
   containers.podman.podman_container:
     name: alertmanager
-    image: quay.io/prom/alertmanager
+    image: docker.io/prom/alertmanager
     state: started
     ports:
       - "9093:9093"

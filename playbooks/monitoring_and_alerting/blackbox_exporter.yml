@@ -15,7 +15,7 @@
 - name: Run Blackbox Exporter container
   containers.podman.podman_container:
     name: blackbox_exporter
-    image: quay.io/prom/blackbox-exporter
+    image: docker.io/prom/blackbox-exporter
     state: started
     ports:
       - "9115:9115"
