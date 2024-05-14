@@ -9,7 +9,7 @@
 
 - name: Copy Alertmanager configuration file
   copy:
-    src: alertmanager.yml
+    src: files/alertmanager.yml
     dest: /opt/alertmanager/alertmanager.yml
 
 - name: Run Alertmanager container
@@ -20,7 +20,7 @@
     ports:
       - "9093:9093"
     volumes:
-      - /opt/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml
+      - /opt/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
     dns_servers:
       - 192.168.100.10
       - 8.8.8.8
