@@ -37,6 +37,3 @@
       - "9090:9090"
     volumes:
       - /opt/prometheus/:/etc/prometheus/
-    dns_servers:
-      - 192.168.100.10
-      - 8.8.8.8
