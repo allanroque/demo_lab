@@ -102,5 +102,5 @@
           name: SH HTTP Service Down
           organization: Default
           job_args:
-            limit: "{{ event.alert.labels.instance }}"
+            limit: "{{ event.meta.hosts }}"
 
