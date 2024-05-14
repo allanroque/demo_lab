@@ -59,7 +59,7 @@
 
           services:
             server:
-              image: docker.io/gitea/gitea:1.16.5
+              image: docker.io/gitea/gitea:latest
               container_name: gitea
               environment:
                 - USER_UID={{ git_uid.stdout }}
@@ -69,7 +69,7 @@
                 - gitea
               volumes:
                 - /opt/gitea/gitea:/data
-                - /home/git/.ssh:/data/git/.ssh
+                - /opt/gitea/.ssh:/data/git/ssh
                 - /etc/timezone:/etc/timezone:ro
                 - /etc/localtime:/etc/localtime:ro
               ports:
