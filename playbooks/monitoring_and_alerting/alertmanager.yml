@@ -13,7 +13,7 @@
     dest: /opt/alertmanager/alertmanager.yml
 
 - name: Run Alertmanager container
-  podman_container:
+  containers.podman.podman_container:
     name: alertmanager
     image: prom/alertmanager
     state: started

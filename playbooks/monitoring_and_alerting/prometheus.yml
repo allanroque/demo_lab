@@ -18,7 +18,7 @@
    dest: /etc/prometheus/prometheus.yml
 
 - name: Run Prometheus container
-  podman_container:
+  containers.podman.podman_container:
     name: prometheus
     image: prom/prometheus
     state: started

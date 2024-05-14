@@ -13,7 +13,7 @@
     dest: /opt/blackbox_exporter/blackbox.yml
 
 - name: Run Blackbox Exporter container
-  podman_container:
+  containers.podman.podman_container:
     name: blackbox_exporter
     image: prom/blackbox-exporter
     state: started
