@@ -21,7 +21,7 @@
 
     - name: Pull and start NetBox containers with Podman Compose
       ansible.builtin.command:
-        cmd: podman-compose up -d
+        command: podman-compose up -d
         args:
           chdir: /opt/netbox-docker
 
