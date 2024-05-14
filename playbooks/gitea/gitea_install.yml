@@ -5,40 +5,39 @@
   become: true
   tasks:
 
+    - name: Create git user
+      ansible.builtin.user:
+        name: git
+        system: yes
+        shell: /bin/bash
+        comment: 'Git Version Control'
+        home: /opt/gitea
+
     - name: Create Gitea configuration directory
       ansible.builtin.file:
         path: /opt/gitea
         state: directory
-        owner: 1000
-        group: 1000
-        mode: '0755'
+        owner: git
+        group: git
 
     - name: Create Gitea data directory
       ansible.builtin.file:
-        path: /opt/gitea/data
+        path: /opt/gitea/gitea
         state: directory
-        owner: 1000
-        group: 1000
-        mode: '0755'
+        owner: git
+        group: git
 
-    - name: Create Gitea custom configuration directory
+    - name: Create SSH directory for git
       ansible.builtin.file:
-        path: /opt/gitea/custom
+        path: /home/git/.ssh
         state: directory
-        owner: 1000
-        group: 1000
-        mode: '0755'
+        owner: git
+        group: git
+        mode: '0700'
 
-    - name: Create Gitea log directory
-      ansible.builtin.file:
-        path: /opt/gitea/log
-        state: directory
-        owner: 1000
-        group: 1000
-        mode: '0755'
-
-    - name: Ensure permissions for Gitea directories
-      ansible.builtin.command: chown -R 1000:1000 /opt/gitea
+    - name: Set permissions for /opt/gitea
+      ansible.builtin.command:
+        cmd: chown -R git:git /opt/gitea
       become: true
 
     - name: Create Podman Compose file for Gitea
@@ -47,18 +46,25 @@
         content: |
           version: "3"
 
+          networks:
+            gitea:
+              external: false
+
           services:
             server:
-              image: docker.io/gitea/gitea:latest
+              image: docker.io/gitea/gitea:1.16.5
               container_name: gitea
-              restart: always
               environment:
-                - USER_UID=1000
-                - USER_GID=1000
+                - USER_UID={{ lookup('ansible.builtin.ansible_facts', 'ansible_uid', 'git') }}
+                - USER_GID={{ lookup('ansible.builtin.ansible_facts', 'ansible_gid', 'git') }}
+              restart: always
+              networks:
+                - gitea
               volumes:
-                - /opt/gitea/data:/data
-                - /opt/gitea/custom:/app/gitea/custom
-                - /opt/gitea/log:/app/gitea/log
+                - /opt/gitea/gitea:/data
+                - /home/git/.ssh:/data/git/.ssh
+                - /etc/timezone:/etc/timezone:ro
+                - /etc/localtime:/etc/localtime:ro
               ports:
                 - "3000:3000"
                 - "2222:22"
