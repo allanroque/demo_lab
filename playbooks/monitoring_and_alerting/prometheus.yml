@@ -19,8 +19,8 @@
 
 - name: Copy alertmanager files
   copy:
-    src: "{{ item }}"
-    dest: /opt/prometheus/{{ item }}"
+    src: "files/{{ item }}"
+    dest: "/opt/prometheus/{{ item }}"
   loop:
     - alert_selinux_disabled.yml
     - alert_filesystem_usage.yml
