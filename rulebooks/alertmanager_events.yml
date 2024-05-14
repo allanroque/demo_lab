@@ -45,6 +45,7 @@
       action:
         debug:
           msg: "enabled on: {{ event.meta.hosts }}"
+          post_events: true
 
 ##############
 # FileSystem #
