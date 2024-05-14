@@ -1,0 +1,29 @@
+---
+- name: Deploy NetBox with Podman
+  hosts: hyper01.aroque.com.br
+  tasks:
+    - name: Ensure Podman is installed
+      package:
+        name: podman
+        state: present
+
+    - name: Clone NetBox Docker repository
+      git:
+        repo: 'https://github.com/netbox-community/netbox-docker.git'
+        dest: /opt/netbox-docker
+
+    - name: Copy docker-compose.yml to podman-compose.yml
+      copy:
+        src: /opt/netbox-docker/docker-compose.yml
+        dest: /opt/netbox-docker/podman-compose.yml
+
+    - name: Update compose file for Podman compatibility
+      replace:
+        path: /opt/netbox-docker/podman-compose.yml
+        regexp: 'image:'
+        replace: 'image: docker.io/'
+
+    - name: Run NetBox with Podman
+      command: podman-compose -f /opt/netbox-docker/podman-compose.yml up -d
+      args:
+        chdir: /opt/netbox-docker
