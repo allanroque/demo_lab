@@ -2,6 +2,42 @@
 - name: Configure basic IPAM in NetBox
   hosts: localhost
   gather_facts: false
+  vars:
+    vms:
+      - name: ac01.aroque.com.br
+        state: "running"
+        ip_address: "192.168.100.111"
+      - name: aap01.aroque.com.br
+        state: "shut off"
+        ip_address: "192.168.10.11"
+      - name: ansible01.aroque.com.br
+        state: "shut off"
+        ip_address: "192.168.1.105"
+      - name: base-image.aroque.com.br
+        state: "shut off"
+        ip_address: "192.168.100.5"
+      - name: eda01.aroque.com.br
+        state: "running"
+        ip_address: "192.168.100.112"
+      - name: ipamonit.aroque.com.br
+        state: "shut off"
+        ip_address: "192.168.100.15"
+      - name: web01.aroque.com.br
+        state: "running"
+        ip_address: "192.168.100.21"
+      - name: web02.aroque.com.br
+        state: "running"
+        ip_address: "192.168.100.22"
+      - name: zabbix.aroque.com.br
+        state: "running"
+        ip_address: "192.168.100.13"
+      - name: idmgit.aroque.com.br
+        state: "running"
+        ip_address: "192.168.100.10"
+      - name: db01.aroque.com.br
+        state: "running"
+        ip_address: "192.168.1.101"
+
   tasks:
     - name: Create site
       netbox.netbox.netbox_site:
@@ -38,4 +74,34 @@
         data:
           name: "KVM"
           slug: "kvm"
+        state: present
+
+    - name: Add devices with IP addresses
+      loop: "{{ vms }}"
+      netbox.netbox.netbox_device:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ item.name }}"
+          device_role: "Server"
+          device_type: "Virtual Machine"
+          site: "Lab"
+          tenant: "MyTenant"
+          platform: "KVM"
+          status: "{{ 'active' if item.state == 'running' else 'offline' }}"
+        state: present
+
+    - name: Add IP addresses to devices
+      loop: "{{ vms }}"
+      netbox.netbox.netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          address: "{{ item.ip_address }}/24"
+          assigned_object_type: "dcim.device"
+          assigned_object_id: "{{ lookup('netbox.netbox.netbox_device', item.name).id }}"
+          description: "Configured by Ansible"
+          dns_name: "{{ item.name }}"
+          role: "active"
+          status: "active"
         state: present
