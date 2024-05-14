@@ -1,0 +1,14 @@
+---
+- name: Stop and Remove NetBox with Podman
+  hosts: hyper01.aroque.com.br
+  become: true
+  tasks:
+    - name: Stop NetBox containers with Podman Compose
+      ansible.builtin.command: podman-compose stop
+      args:
+        chdir: /opt/netbox-docker
+
+#    - name: Remove NetBox containers and volumes with Podman Compose
+#      ansible.builtin.command: podman-compose down -v
+#     args:
+#        chdir: /opt/netbox-docker

@@ -1,14 +1,8 @@
 ---
-- name: Deploy NetBox with Podman
+- name: Start NetBox with Podman
   hosts: hyper01.aroque.com.br
   become: true
   tasks:
-
-    - name: Clone NetBox Podman repository
-      ansible.builtin.git:
-        repo: 'https://github.com/netbox-community/netbox-docker.git'
-        dest: /opt/netbox-docker
-
     - name: Create podman-compose.override.yml
       ansible.builtin.copy:
         dest: /opt/netbox-docker/docker-compose.override.yml
@@ -29,9 +23,3 @@
         port: 8000
         delay: 30
         timeout: 300
-
-#    - name: Create NetBox admin user
-#      ansible.builtin.command:
-#        cmd: podman-compose exec netbox /opt/netbox/ 
-#        args:
-#          chdir: /opt/netbox-docker
