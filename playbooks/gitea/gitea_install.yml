@@ -5,47 +5,10 @@
   become: true
   tasks:
 
-    - name: Create git user
-      ansible.builtin.user:
-        name: git
-        system: yes
-        shell: /bin/bash
-        comment: 'Git Version Control'
-        home: /opt/gitea
-
     - name: Create Gitea configuration directory
       ansible.builtin.file:
         path: /opt/gitea
         state: directory
-        owner: git
-        group: git
-
-    - name: Create Gitea data directory
-      ansible.builtin.file:
-        path: /opt/gitea/gitea
-        state: directory
-        owner: git
-        group: git
-
-    - name: Get UID of git user
-      ansible.builtin.command: id -u git
-      register: git_uid
-
-    - name: Get GID of git group
-      ansible.builtin.command: id -g git
-      register: git_gid
-
-    - name: Create SSH directory for git
-      ansible.builtin.file:
-        path: /home/git/.ssh
-        state: directory
-        owner: git
-        group: git
-        mode: '0700'
-
-    - name: Set permissions for /opt/gitea
-      ansible.builtin.command: chown -R git:git /opt/gitea
-      become: true
 
     - name: Create Podman Compose file for Gitea
       ansible.builtin.copy:
@@ -59,17 +22,16 @@
 
           services:
             server:
-              image: docker.io/gitea/gitea:latest
+              image: docker.io/gitea/gitea:1.21.11
               container_name: gitea
               environment:
-                - USER_UID={{ git_uid.stdout }}
-                - USER_GID={{ git_gid.stdout }}
+                - USER_UID=1000
+                - USER_GID=1000
               restart: always
               networks:
                 - gitea
               volumes:
                 - /opt/gitea/gitea:/data
-                - /opt/gitea/.ssh:/data/git/ssh
                 - /etc/timezone:/etc/timezone:ro
                 - /etc/localtime:/etc/localtime:ro
               ports:
