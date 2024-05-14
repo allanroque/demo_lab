@@ -15,14 +15,14 @@
 
     - name: Create NetBox config directory
       file:
-        path: "/opt/netbox/config"
+        path: "/opt/netbox/"
         state: directory
         owner: "1000"
         group: "1000"
         mode: '0755'
 
     - name: Ensure correct permissions on the config directory
-      command: chown -R 1000:1000 /opt/netbox/config
+      command: chown -R 1000:1000 /opt/netbox/
 
     - name: Run NetBox container
       containers.podman.podman_container:
@@ -48,5 +48,5 @@
         ports:
           - "8000:8000"
         volumes:
-          - "/opt/netbox/config:/config"
+          - "/opt/netbox/:/config"
         restart_policy: unless-stopped
