@@ -5,11 +5,11 @@
 
   tasks:
     - name: Include Prometheus Playbook
-      include_playbook: prometheus.yml
+      import_playbook: prometheus.yml
 
     - name: Include Alertmanager Playbook
-      include_playbook: alertmanager.yml
+      import_playbook: alertmanager.yml
 
     - name: Include Blackbox Exporter Playbook
-      include_playbook: blackbox_exporter.yml
+      import_playbook: blackbox_exporter.yml
 
