@@ -32,7 +32,7 @@
 
           services:
             server:
-              image: gitea/gitea:latest
+              image: registry.access.redhat.com/gitea/gitea:latest
               container_name: gitea
               restart: always
               environment:
