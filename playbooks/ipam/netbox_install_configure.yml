@@ -3,40 +3,36 @@
   hosts: hyper01.aroque.com.br
   tasks:
 
-    - name: Modify docker-compose.yml for Podman compatibility
-      replace:
-        path: /opt/netbox-docker/docker-compose.yml
-        regexp: 'image:'
-        replace: 'image: docker.io/'
+    - name: Create NetBox config directory
+      file:
+        path: "/opt/netbox/config"
+        state: directory
+        owner: "1000"
+        group: "1000"
 
-    - name: Create docker-compose.override.yml to set the port
-      copy:
-        dest: /opt/netbox-docker/docker-compose.override.yml
-        content: |
-          version: '3.4'
-          services:
-            netbox:
-              ports:
-                - 8000:8080
-
-    - name: Pull NetBox Docker containers
-      command: podman-compose -f /opt/netbox-docker/docker-compose.yml pull
-      args:
-        chdir: /opt/netbox-docker
-
-    - name: Run NetBox with Podman
-      command: podman-compose -f /opt/netbox-docker/docker-compose.yml up -d
-      args:
-        chdir: /opt/netbox-docker
-
-    - name: Wait for NetBox to be healthy
-      wait_for:
-        path: "http://localhost:8000"
-        port: 8000
-        delay: 30
-        timeout: 300
-
-    - name: Create NetBox admin user
-      command: podman-compose -f /opt/netbox-docker/docker-compose.yml exec netbox /opt/netbox/netbox/manage.py createsuperuser
-      args:
-        chdir: /opt/netbox-docker
+    - name: Run NetBox container
+      containers.podman.podman_container:
+        name: netbox
+        image: lscr.io/linuxserver/netbox:latest
+        state: started
+        env:
+          PUID: "1000"
+          PGID: "1000"
+          TZ: "Etc/UTC"
+          SUPERUSER_EMAIL: "admin@example.com"
+          SUPERUSER_PASSWORD: "redhat"
+          ALLOWED_HOST: "localhost,127.0.0.1"
+          DB_NAME: "netbox"
+          DB_USER: "netbox"
+          DB_PASSWORD: "redhat"
+          DB_HOST: "localhost"
+          DB_PORT: "5432"
+          REDIS_HOST: "localhost"
+          REDIS_PORT: "6379"
+          REDIS_DB_TASK: "0"
+          REDIS_DB_CACHE: "1"
+        ports:
+          - "8000:8000"
+        volumes:
+          - "/opt/config:/config"
+        restart_policy: unless-stopped
