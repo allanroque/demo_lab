@@ -27,6 +27,14 @@
         owner: git
         group: git
 
+    - name: Get UID of git user
+      ansible.builtin.command: id -u git
+      register: git_uid
+
+    - name: Get GID of git group
+      ansible.builtin.command: id -g git
+      register: git_gid
+
     - name: Create SSH directory for git
       ansible.builtin.file:
         path: /home/git/.ssh
