@@ -1,0 +1,14 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 15s
+  repeat_interval: 1m
+  receiver: 'webhooks'
+
+receivers:
+- name: 'webhooks'
+  webhook_configs:
+  - url: 'http://192.168.100.112:5050/prometheus'

@@ -1,0 +1,28 @@
+---
+- name: Setup and run Blackbox Exporter with Podman
+  hosts: hyper01.aroque.com.br
+  become: yes
+
+  tasks:
+    - name: Create directory for Blackbox Exporter configuration
+      file:
+        path: /opt/blackbox_exporter
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Create Blackbox Exporter configuration file
+      copy:
+        src: files/blackbox.yml
+        dest: /opt/blackbox_exporter/blackbox.yml
+
+    - name: Run Blackbox Exporter container
+      podman_container:
+        name: blackbox_exporter
+        image: prom/blackbox-exporter
+        state: started
+        ports:
+          - "9115:9115"
+        volumes:
+          - /opt/blackbox_exporter/blackbox.yml:/etc/blackbox_exporter/config.yml

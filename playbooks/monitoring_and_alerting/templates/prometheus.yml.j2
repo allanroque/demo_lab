@@ -1,0 +1,56 @@
+global:
+  scrape_interval: 5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 5s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - 127.0.0.1:9093
+
+rule_files:
+  - alert_selinux_disabled.yml
+  - alert_filesystem_usage.yml
+  - alert_memory_usage.yml
+  - alert_instance_availability.yml
+  - alert_http.yml
+
+scrape_configs:
+  - job_name: 'ssh'
+    metrics_path: /probe
+    params:
+      module: [tcp_22]
+    static_configs:
+      - targets:
+        - web01.aroque.com.br:22
+        - web02.aroque.com.br:22
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115  # The Blackbox exporter's address.
+  - job_name: 'http'
+    metrics_path: /probe
+    params:
+      module: [http_80]
+    static_configs:
+      - targets:
+        - http://web01.aroque.com.br:80
+        - http://web02.aroque.com.br:80
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115  # The Blackbox exporter's address.
+  - job_name: 'prometheus' # Define o nome do job que o Prometheus irá monitorar
+    static_configs:
+      - targets: ['ipamonit.aroque.com.br:9090'] # Define o endereço do serviço que o Prometheus irá monitorar (no caso, ele irá monitorar a si mesmo)
+{% for host in groups['INFRA'] %}
+  - job_name: '{{ host }}'
+    static_configs:
+      - targets: ['{{ host }}:9100']
+{% endfor %}
