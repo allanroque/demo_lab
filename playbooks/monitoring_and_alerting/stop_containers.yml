@@ -3,7 +3,6 @@
   hosts: hyper01.aroque.com.br
   become: yes
   tasks:
-  tasks:
     - name: Stop and remove Blackbox Exporter container
       containers.podman.podman_container:
         name: blackbox_exporter
