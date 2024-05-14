@@ -1,28 +1,23 @@
 ---
-- name: Setup and run Alertmanager with Podman
-  hosts: hyper01.aroque.com.br
-  become: yes
+- name: Create directory for Alertmanager configuration
+  file:
+    path: /opt/alertmanager
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
 
-  tasks:
-    - name: Create directory for Alertmanager configuration
-      file:
-        path: /opt/alertmanager
-        state: directory
-        owner: root
-        group: root
-        mode: '0755'
+- name: Create Alertmanager configuration file
+  copy:
+    src: files/alertmanager.yml
+    dest: /opt/alertmanager/alertmanager.yml
 
-    - name: Create Alertmanager configuration file
-      copy:
-        src: files/alertmanager.yml
-        dest: /opt/alertmanager/alertmanager.yml
-
-    - name: Run Alertmanager container
-      podman_container:
-        name: alertmanager
-        image: prom/alertmanager
-        state: started
-        ports:
-          - "9093:9093"
-        volumes:
-          - /opt/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml
+- name: Run Alertmanager container
+  podman_container:
+    name: alertmanager
+    image: prom/alertmanager
+    state: started
+    ports:
+      - "9093:9093"
+    volumes:
+      - /opt/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml
