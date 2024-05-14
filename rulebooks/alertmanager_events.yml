@@ -95,7 +95,7 @@
       condition: event.alert.labels.job == "http" and event.alert.status == "firing"
       action:
         run_job_template:
-          name: Respond to HTTP Service Down
+          name: SH HTTP Service Down
           organization: Default
           job_args:
             limit: "{{ event.meta.hosts }}"

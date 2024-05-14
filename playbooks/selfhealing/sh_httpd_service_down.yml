@@ -1,0 +1,11 @@
+---
+- name: Ensure httpd is installed and running
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Ensure httpd is started and enabled
+      service:
+        name: httpd
+        state: started
+        enabled: yes
