@@ -31,7 +31,7 @@
 ###########
 
     - name: SELinux was disabled
-      condition: event.alert.labels.alertname == "selinux disabled" and event.alert.status == "firing"
+      condition: event.alert.labels.alertname == "SELinuxDisabled" and event.alert.status == "firing"
       action:
         run_workflow_template:
           name: WF SH SELinux Settings
@@ -40,7 +40,7 @@
             limit: "{{ event.meta.hosts }}"
 
     - name: SELinux was enabled
-      condition: event.alert.labels.alertname == "selinux disabled" and event.alert.status == "resolved"
+      condition: event.alert.labels.alertname == "SELinuxDisabled" and event.alert.status == "resolved"
       action:
         debug:
           msg: "enabled on: {{ event.meta.hosts }}"
@@ -99,4 +99,3 @@
           organization: Default
           job_args:
             limit: "{{ event.meta.hosts }}"
-
