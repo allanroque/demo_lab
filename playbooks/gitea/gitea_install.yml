@@ -2,6 +2,7 @@
 - name: Install and configure Gitea in Podman container
   hosts: hyper01.aroque.com.br
   gather_facts: false
+  become: true
   tasks:
     - name: Create Gitea configuration directory
       ansible.builtin.file:
@@ -47,10 +48,5 @@
 
     - name: Start Gitea container with Podman Compose
       ansible.builtin.command: podman-compose -f /opt/gitea/podman-compose.yml up -d
-      args:
-        chdir: /opt/gitea
-
-    - name: Ensure Gitea container is running
-      ansible.builtin.command: podman-compose -f /opt/gitea/podman-compose.yml start
       args:
         chdir: /opt/gitea
