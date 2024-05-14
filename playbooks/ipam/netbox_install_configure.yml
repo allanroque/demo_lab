@@ -1,52 +1,39 @@
 ---
-- name: Deploy NetBox with Podman
+- name: Deploy NetBox with Docker
   hosts: hyper01.aroque.com.br
   become: true
   tasks:
-    - name: Ensure Podman is installed
-      package:
-        name: podman
-        state: present
 
-    - name: Ensure Git is installed
-      package:
-        name: git
-        state: present
+    - name: Clone NetBox Docker repository
+      ansible.builtin.git:
+        repo: 'https://github.com/netbox-community/netbox-docker.git'
+        dest: /opt/netbox-docker
 
-    - name: Create NetBox config directory
-      file:
-        path: "/opt/netbox/"
-        state: directory
-        owner: "1000"
-        group: "1000"
-        mode: '0755'
+    - name: Create docker-compose.override.yml
+      ansible.builtin.copy:
+        dest: /opt/netbox-docker/docker-compose.override.yml
+        content: |
+          version: '3.4'
+          services:
+            netbox:
+              ports:
+              - 8000:8080
 
-    - name: Ensure correct permissions on the config directory
-      command: chown -R 1000:1000 /opt/netbox/
+    - name: Pull and start NetBox containers with Podman Compose
+      ansible.builtin.command:
+        cmd: podman-compose up -d
+        args:
+          chdir: /opt/netbox-docker
 
-    - name: Run NetBox container
-      containers.podman.podman_container:
-        name: netbox
-        image: lscr.io/linuxserver/netbox:latest
-        state: started
-        env:
-          PUID: "1000"
-          PGID: "1000"
-          TZ: "America/Sao_Paulo"
-          SUPERUSER_EMAIL: "admin@example.com"
-          SUPERUSER_PASSWORD: "redhat"
-          ALLOWED_HOST: "localhost,127.0.0.1"
-          DB_NAME: "netbox"
-          DB_USER: "netbox"
-          DB_PASSWORD: "redhat"
-          DB_HOST: "localhost"
-          DB_PORT: "5432"
-          REDIS_HOST: "localhost"
-          REDIS_PORT: "6379"
-          REDIS_DB_TASK: "0"
-          REDIS_DB_CACHE: "1"
-        ports:
-          - "8000:8000"
-        volumes:
-          - "/opt/netbox/:/config"
-        restart_policy: unless-stopped
+    - name: Wait for NetBox to be healthy
+      ansible.builtin.wait_for:
+        path: "http://localhost:8000"
+        port: 8000
+        delay: 30
+        timeout: 300
+
+    - name: Create NetBox admin user
+      ansible.builtin.command:
+        cmd: podman-compose exec netbox /opt/netbox/netbox/manage.py createsuperuser
+        args:
+          chdir: /opt/netbox-docker
