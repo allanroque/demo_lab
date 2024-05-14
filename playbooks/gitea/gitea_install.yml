@@ -37,6 +37,10 @@
         group: 1000
         mode: '0755'
 
+    - name: Ensure permissions for Gitea directories
+      ansible.builtin.command: chown -R 1000:1000 /opt/gitea
+      become: true
+
     - name: Create Podman Compose file for Gitea
       ansible.builtin.copy:
         dest: /opt/gitea/podman-compose.yml
