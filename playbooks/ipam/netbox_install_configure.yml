@@ -32,8 +32,8 @@
         delay: 30
         timeout: 300
 
-    - name: Create NetBox admin user
-      ansible.builtin.command:
-        cmd: podman-compose exec netbox /opt/netbox/netbox/manage.py createsuperuser
-        args:
-          chdir: /opt/netbox-docker
+#    - name: Create NetBox admin user
+#      ansible.builtin.command:
+#        cmd: podman-compose exec netbox /opt/netbox/netbox/manage.py createsuperuser
+#        args:
+#          chdir: /opt/netbox-docker
