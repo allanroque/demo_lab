@@ -1,13 +1,28 @@
 ---
 - name: Deploy NetBox with Podman
   hosts: hyper01.aroque.com.br
+  become: true
   tasks:
+    - name: Ensure Podman is installed
+      package:
+        name: podman
+        state: present
+
+    - name: Ensure Git is installed
+      package:
+        name: git
+        state: present
+
     - name: Create NetBox config directory
       file:
         path: "/opt/netbox/config"
         state: directory
         owner: "1000"
         group: "1000"
+        mode: '0755'
+
+    - name: Ensure correct permissions on the config directory
+      command: chown -R 1000:1000 /opt/netbox/config
 
     - name: Run NetBox container
       containers.podman.podman_container:
@@ -17,7 +32,7 @@
         env:
           PUID: "1000"
           PGID: "1000"
-          TZ: "Etc/UTC"
+          TZ: "America/Sao_Paulo"
           SUPERUSER_EMAIL: "admin@example.com"
           SUPERUSER_PASSWORD: "redhat"
           ALLOWED_HOST: "localhost,127.0.0.1"
