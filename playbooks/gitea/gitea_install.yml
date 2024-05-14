@@ -36,8 +36,7 @@
         mode: '0700'
 
     - name: Set permissions for /opt/gitea
-      ansible.builtin.command:
-        cmd: chown -R git:git /opt/gitea
+      ansible.builtin.command: chown -R git:git /opt/gitea
       become: true
 
     - name: Create Podman Compose file for Gitea
