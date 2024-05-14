@@ -103,4 +103,5 @@
           organization: Default
           job_args:
             limit: "{{ event.meta.hosts }}"
+          post_events: true
 
