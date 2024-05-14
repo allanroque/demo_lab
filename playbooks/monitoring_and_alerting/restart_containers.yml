@@ -6,14 +6,29 @@
     - name: Restart Blackbox Exporter container
       containers.podman.podman_container:
         name: blackbox_exporter
-        state: restarted
+        state: stopped
 
     - name: Restart Alertmanager container
       containers.podman.podman_container:
         name: alertmanager
-        state: restarted
+        state: stopped
 
     - name: Restart Prometheus container
       containers.podman.podman_container:
         name: prometheus
-        state: restarted
+        state: stopped
+
+    - name: Restart Blackbox Exporter container
+      containers.podman.podman_container:
+        name: blackbox_exporter
+        state: started
+
+    - name: Restart Alertmanager container
+      containers.podman.podman_container:
+        name: alertmanager
+        state: started
+
+    - name: Restart Prometheus container
+      containers.podman.podman_container:
+        name: prometheus
+        state: started
