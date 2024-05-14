@@ -26,7 +26,6 @@
 
     - name: Wait for NetBox to be healthy
       ansible.builtin.wait_for:
-        path: "http://localhost:8000"
         port: 8000
         delay: 30
         timeout: 300
