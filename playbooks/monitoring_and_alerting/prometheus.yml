@@ -12,6 +12,15 @@
     msg: "{{ item }}"
   loop: "{{ groups['INFRA'] }}"
 
+- name: Get IP address of Alertmanager container
+  command: podman inspect -f '{{ .NetworkSettings.IPAddress }}' alertmanager
+  register: alertmanager_ip
+
+
+- name: Get IP address of blackbox_exporter container
+  command: podman inspect -f '{{ .NetworkSettings.IPAddress }}' blackbox_exporter
+  register: blackbox_exporter_ip
+
 - name: Create Prometheus configuration file
   template:
    src: prometheus.yml.j2
@@ -37,3 +46,6 @@
       - "9090:9090"
     volumes:
       - /opt/prometheus/:/etc/prometheus/
+    dns_servers:
+      - 192.168.100.10
+      - 8.8.8.8

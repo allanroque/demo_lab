@@ -6,7 +6,7 @@ alerting:
   alertmanagers:
   - static_configs:
     - targets:
-      - 127.0.0.1:9093
+      - "{{ alertmanager_ip }}:9093"
 
 rule_files:
   - alert_selinux_disabled.yml
@@ -30,7 +30,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: localhost:9115  # The Blackbox exporter's address.
+        replacement: "{{ blackbox_exporter_ip }}:9115"  # The Blackbox exporter's address.
   - job_name: 'http'
     metrics_path: /probe
     params:
