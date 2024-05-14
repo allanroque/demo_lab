@@ -2,28 +2,41 @@
 - name: Deploy NetBox with Podman
   hosts: hyper01.aroque.com.br
   tasks:
-    - name: Ensure Podman is installed
-      package:
-        name: podman
-        state: present
 
-    - name: Clone NetBox Docker repository
-      git:
-        repo: 'https://github.com/netbox-community/netbox-docker.git'
-        dest: /opt/netbox-docker
-
-    - name: Copy docker-compose.yml to podman-compose.yml
-      copy:
-        src: /opt/netbox-docker/docker-compose.yml
-        dest: /opt/netbox-docker/podman-compose.yml
-
-    - name: Update compose file for Podman compatibility
+    - name: Modify docker-compose.yml for Podman compatibility
       replace:
-        path: /opt/netbox-docker/podman-compose.yml
+        path: /opt/netbox-docker/docker-compose.yml
         regexp: 'image:'
         replace: 'image: docker.io/'
 
+    - name: Create docker-compose.override.yml to set the port
+      copy:
+        dest: /opt/netbox-docker/docker-compose.override.yml
+        content: |
+          version: '3.4'
+          services:
+            netbox:
+              ports:
+                - 8000:8080
+
+    - name: Pull NetBox Docker containers
+      command: podman-compose -f /opt/netbox-docker/docker-compose.yml pull
+      args:
+        chdir: /opt/netbox-docker
+
     - name: Run NetBox with Podman
-      command: podman-compose -f /opt/netbox-docker/podman-compose.yml up -d
+      command: podman-compose -f /opt/netbox-docker/docker-compose.yml up -d
+      args:
+        chdir: /opt/netbox-docker
+
+    - name: Wait for NetBox to be healthy
+      wait_for:
+        path: "http://localhost:8000"
+        port: 8000
+        delay: 30
+        timeout: 300
+
+    - name: Create NetBox admin user
+      command: podman-compose -f /opt/netbox-docker/docker-compose.yml exec netbox /opt/netbox/netbox/manage.py createsuperuser
       args:
         chdir: /opt/netbox-docker
