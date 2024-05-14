@@ -17,6 +17,17 @@
    src: prometheus.yml.j2
    dest: /opt/prometheus/prometheus.yml
 
+- name: Copy alertmanager files
+  copy:
+    src: files/"{{ item }}"
+    dest: /opt/prometheus/"{{ item }}"
+  loop:
+    - alert_selinux_disabled.yml
+    - alert_filesystem_usage.yml
+    - alert_memory_usage.yml
+    - alert_instance_availability.yml
+    - alert_http.yml
+
 - name: Run Prometheus container
   containers.podman.podman_container:
     name: prometheus
@@ -25,4 +36,4 @@
     ports:
       - "9090:9090"
     volumes:
-      - /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /opt/prometheus/:/etc/prometheus/
