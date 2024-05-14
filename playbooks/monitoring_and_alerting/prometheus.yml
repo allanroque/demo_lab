@@ -15,7 +15,7 @@
 - name: Create Prometheus configuration file
   template:
    src: prometheus.yml.j2
-   dest: /etc/prometheus/prometheus.yml
+   dest: /opt/prometheus/prometheus.yml
 
 - name: Run Prometheus container
   containers.podman.podman_container:
