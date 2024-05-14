@@ -99,7 +99,7 @@
         event.alert.status == "firing"
       action:
         run_job_template:
-          name: SH HTTP Service Restart
+          name: SH HTTP Service Down
           organization: Default
           job_args:
             limit: "{{ event.alert.labels.instance }}"
