@@ -47,8 +47,10 @@
 
     - name: Start Gitea container with Podman Compose
       ansible.builtin.command: podman-compose -f /opt/gitea/podman-compose.yml up -d
+      args:
         chdir: /opt/gitea
 
     - name: Ensure Gitea container is running
       ansible.builtin.command: podman-compose -f /opt/gitea/podman-compose.yml start
+      args:
         chdir: /opt/gitea
