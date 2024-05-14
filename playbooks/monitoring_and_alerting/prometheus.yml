@@ -19,7 +19,7 @@
 
 - name: Run Prometheus container
   containers.podman.podman_container:
-    name: prometheus
+    name: quay.io/prometheus
     image: prom/prometheus
     state: started
     ports:
