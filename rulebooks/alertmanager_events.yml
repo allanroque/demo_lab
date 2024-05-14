@@ -94,9 +94,7 @@
 ################
 
     - name: Respond to HTTP Service Down Alert
-      condition: >
-        event.alert.labels.alertname == "HTTPServiceDown" and
-        event.alert.status == "firing"
+      condition: event.alert.labels.alertname == "HTTPServiceDown" and event.alert.status == "firing"
       action:
         run_job_template:
           name: SH HTTP Service Down
