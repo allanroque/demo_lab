@@ -1,0 +1,19 @@
+---
+- name: Restart Prometheus, Alertmanager, and Blackbox Exporter containers
+  hosts: hyper01.aroque.com.br
+  become: yes
+  tasks:
+    - name: Stop Blackbox Exporter container
+      containers.podman.podman_container:
+        name: blackbox_exporter
+        state: stopped
+
+    - name: Stop Alertmanager container
+      containers.podman.podman_container:
+        name: alertmanager
+        state: stopped
+
+    - name: Stop Prometheus container
+      containers.podman.podman_container:
+        name: prometheus
+        state: stopped
