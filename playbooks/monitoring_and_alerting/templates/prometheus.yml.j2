@@ -6,7 +6,7 @@ alerting:
   alertmanagers:
   - static_configs:
     - targets:
-      - "{{ alertmanager_ip }}:9093"
+      - {{ alertmanager_ip }}:9093
 
 rule_files:
   - alert_selinux_disabled.yml
@@ -30,7 +30,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: "{{ blackbox_exporter_ip }}:9115"  # The Blackbox exporter's address.
+        replacement: {{ blackbox_exporter_ip }}:9115  # The Blackbox exporter's address.
   - job_name: 'http'
     metrics_path: /probe
     params:
@@ -45,7 +45,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: localhost:9115  # The Blackbox exporter's address.
+        replacement: {{ blackbox_exporter_ip }}:9115  # The Blackbox exporter's address.
   - job_name: 'prometheus' # Define o nome do job que o Prometheus irá monitorar
     static_configs:
       - targets: ['ipamonit.aroque.com.br:9090'] # Define o endereço do serviço que o Prometheus irá monitorar (no caso, ele irá monitorar a si mesmo)
