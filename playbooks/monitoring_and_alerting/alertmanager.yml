@@ -7,9 +7,9 @@
     group: root
     mode: '0755'
 
-- name: Create Alertmanager configuration file
+- name: Copy Alertmanager configuration file
   copy:
-    src: files/alertmanager.yml
+    src: alertmanager.yml
     dest: /opt/alertmanager/alertmanager.yml
 
 - name: Run Alertmanager container
