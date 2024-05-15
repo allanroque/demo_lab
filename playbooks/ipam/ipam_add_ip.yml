@@ -33,3 +33,8 @@
     - name: Extract IP from IPAM response
       set_fact:
         host_ip: "{{ host_ip_output.ip_address.address.split('/')[0] }}"
+
+    - name: Set Job ID number
+      set_stats:
+        data:
+          ac_job_id: "{{ awx_job_id }}"

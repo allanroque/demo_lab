@@ -24,3 +24,8 @@
           address: "{{ host_ip }}/{{ net_cidr }}"
         state: absent
         validate_certs: no
+
+    - name: Set Job ID number
+      set_stats:
+        data:
+          ac_job_id: "{{ awx_job_id }}"

@@ -1,35 +1,41 @@
 ---
-- name: Automate SNOW - Change Create
+- name: Automate SNOW - Change Request Create
   hosts: localhost
   connection: local
-  gather_facts: false
-  vars_files:
-    - vars/main.yml
+  vars:
+    sn_short_description: "{{ job_sshort_description | default('Change Open Via Ansible') }}"
+    sn_description: "{{ job_description | default('Change Open Via Ansible') }}"
+    sn_impact: "low"
+    sn_urgency: "low"
+    sn_change_type: "Normal"
+    sn_category: "Network"
   collections:
     - servicenow.itsm
 
   tasks:
-    - name: Create change request for provisioning server
+    - name: Create change request
       servicenow.itsm.change_request:
-        instance:
-          host: "{{ sn_host }}"
-          username: "{{ sn_username }}"
-          password: "{{ sn_password }}"
         state: new
-        type: standard
-        category: service
-        requested_by: "{{ sn_username }}"
-        short_description: "{{ lookup('ansible.builtin.template', 'change_create_short_description.j2') }}"
-        description: "{{ lookup('ansible.builtin.template', 'change_create_description.j2') }}"
-        priority: moderate
-        risk: low
-        impact: low
-      register: change_output
+        instance:
+          host: "{{ snow_instance }}"
+          username: "{{ snow_username }}"
+          password: "{{ snow_password }}"
+        caller: "{{ lookup('env', 'SN_USERNAME') }}"
+        short_description: "{{ sn_short_description }}"
+        description: "{{ sn_description }}"
+        impact: "{{ sn_impact }}"
+        urgency: "{{ sn_urgency }}"
+        change_type: "{{ sn_change_type }}"
+        category: "{{ sn_category }}"
+      register: new_change_request
+
+    - set_fact:
+        sn_change_request_number: "{{ new_change_request.record.number }}"
 
     - debug:
-        var: change_output.record.number
+        var: new_change_request.record.number
 
-    - name: Set host IP address variable
+    - name: Set change request number
       set_stats:
         data:
-          sn_change_number: "{{ change_output.record.number }}"
+          sn_change_request_number: "{{ new_change_request.record.number }}"
