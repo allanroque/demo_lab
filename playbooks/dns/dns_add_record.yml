@@ -1,0 +1,17 @@
+---
+- name: Create DNS A and PTR records
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+dns_zone: "aroque.com.br"
+reverse_zone: "100.168.192.in-addr.arpa"
+record_state: "present"
+
+# host vars
+host_name: "{{ host_fqdn.split('.')[0] }}"
+host_domain: "{{ dns_zone }}"
+host_fqdn: "{{ host_name }}.{{ host_domain }}"
+host_ip: 
+net_prefix: "192.168.100.0"
+net_cidr: "24"
