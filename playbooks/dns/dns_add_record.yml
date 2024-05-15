@@ -2,16 +2,38 @@
 - name: Create DNS A and PTR records
   hosts: localhost
   gather_facts: false
+  vars:
+    dns_zone: "aroque.com.br"
+    reverse_zone: "100.168.192.in-addr.arpa"
+    record_state: "present"
+    
+    # Host vars
+    host_name: "{{ host_fqdn.split('.')[0] }}"
+    host_domain: "{{ dns_zone }}"
+    host_fqdn: "{{ host_name }}.{{ host_domain }}"
+    host_ip: ""
+    net_prefix: "192.168.100.0"
+    net_cidr: "24"
+
   tasks:
+    - name: Create DNS A record
+      ipa_dnsrecord:
+        ipa_host: "{{ ipa_host }}"
+        ipa_pass: "{{ ipa_pass }}"
+        zone_name: "{{ dns_zone }}"
+        validate_certs: no
+        record_name: "{{ host_name }}"
+        record_type: A
+        record_value: "{{ host_ip }}"
+        state: "{{ record_state }}"
 
-dns_zone: "aroque.com.br"
-reverse_zone: "100.168.192.in-addr.arpa"
-record_state: "present"
-
-# host vars
-host_name: "{{ host_fqdn.split('.')[0] }}"
-host_domain: "{{ dns_zone }}"
-host_fqdn: "{{ host_name }}.{{ host_domain }}"
-host_ip: 
-net_prefix: "192.168.100.0"
-net_cidr: "24"
+    - name: Create DNS PTR record
+      ipa_dnsrecord:
+        ipa_host: "{{ ipa_host }}"
+        ipa_pass: "{{ ipa_pass }}"
+        zone_name: "{{ reverse_zone }}"
+        validate_certs: no
+        record_name: "{{ host_ip.split('.')[-1] }}"
+        record_type: PTR
+        record_value: "{{ host_name }}.{{ dns_zone }}."
+        state: "{{ record_state }}"
