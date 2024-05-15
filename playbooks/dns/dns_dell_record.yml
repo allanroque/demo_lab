@@ -1,5 +1,5 @@
 ---
-- name: Create DNS A and PTR records
+- name: Delete DNS A and PTR records
   hosts: localhost
   gather_facts: false
   vars:
@@ -21,39 +21,43 @@
 
     - name: Discover IP address of remote host
       set_fact:
-        host_ip: "{{ lookup('dig', host_fqdn + '.', '@' + dns_server, 'qtype=A') }}"
+        discovered_host_ip: "{{ lookup('dig', host_fqdn + '.', '@' + dns_server, 'qtype=A') }}"
 
-    - name: Debug variable host_ip
+    - name: Debug variable discovered_host_ip
       debug:
-        var: host_ip
+        var: discovered_host_ip
 
     - name: Remove reverse DNS record
+      when: discovered_host_ip is defined and discovered_host_ip.split('.').|length == 4
       community.general.ipa_dnsrecord:
         ipa_host: "{{ ipa_host }}"
         ipa_pass: "{{ ipa_pass }}"
         zone_name: "{{ reverse_zone }}"
-        record_name: "{{ host_ip.split('.')[3] }}"
+        record_name: "{{ discovered_host_ip.split('.')[3] }}"
         record_type: 'PTR'
         record_value: "{{ host_fqdn }}."
         state: "{{ record_state }}"
         validate_certs: no
 
     - name: Remove forward DNS record
+      when: discovered_host_ip is defined and discovered_host_ip.split('.').|length == 4
       community.general.ipa_dnsrecord:
         ipa_host: "{{ ipa_host }}"
         ipa_pass: "{{ ipa_pass }}"
         zone_name: "{{ dns_zone }}"
         record_name: "{{ host_name }}"
         record_type: 'A'
-        record_value: "{{ host_ip }}"
+        record_value: "{{ discovered_host_ip }}"
         state: "{{ record_state }}"
         validate_certs: no
 
     - name: Set host_ip as fact
+      when: discovered_host_ip is defined and discovered_host_ip.split('.').|length == 4
       set_fact:
-        host_ip: "{{ host_ip }}"
+        host_ip: "{{ discovered_host_ip }}"
 
     - name: Set host_ip to another job template
+      when: host_ip is defined
       set_stats:
         data:
           host_ip: "{{ host_ip }}"
