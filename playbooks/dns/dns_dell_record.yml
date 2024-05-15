@@ -23,6 +23,11 @@
       set_fact:
         discovered_host_ip: "{{ lookup('dig', host_fqdn + '.', '@' + dns_server, 'qtype=A') }}"
 
+    - name: Fail if host IP not found
+      fail:
+        msg: "!!!!!!! No IP address found for {{ host_fqdn }} !!!!!!!!!"
+      when: discovered_host_ip == "NXDOMAIN"
+
     - name: Debug variable discovered_host_ip
       debug:
         var: discovered_host_ip
