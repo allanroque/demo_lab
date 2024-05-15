@@ -5,8 +5,7 @@
   vars:
     dns_zone: "aroque.com.br"
     reverse_zone: "100.168.192.in-addr.arpa"
-    record_state: "present"
-    
+    record_state: "present" 
     # Host vars
     host_name: "{{ host_fqdn.split('.')[0] }}"
     host_domain: "{{ dns_zone }}"
