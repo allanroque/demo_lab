@@ -7,7 +7,6 @@
     sn_description: "{{ job_description | default('Change Open Via Ansible') }}"
     sn_impact: "low"
     sn_urgency: "low"
-    sn_change_type: "normal"
     sn_category: "network"
   collections:
     - servicenow.itsm
@@ -20,12 +19,10 @@
           host: "{{ snow_instance }}"
           username: "{{ snow_username }}"
           password: "{{ snow_password }}"
-        caller: "{{ lookup('env', 'SN_USERNAME') }}"
         short_description: "{{ sn_short_description }}"
         description: "{{ sn_description }}"
         impact: "{{ sn_impact }}"
         urgency: "{{ sn_urgency }}"
-        change_type: "{{ sn_change_type }}"
         category: "{{ sn_category }}"
       register: new_change_request
 
