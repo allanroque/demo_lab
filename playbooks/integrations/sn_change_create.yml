@@ -7,8 +7,8 @@
     sn_description: "{{ job_description | default('Change Open Via Ansible') }}"
     sn_impact: "low"
     sn_urgency: "low"
-    sn_change_type: "Normal"
-    sn_category: "Network"
+    sn_change_type: "normal"
+    sn_category: "network"
   collections:
     - servicenow.itsm
 
