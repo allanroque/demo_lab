@@ -27,7 +27,7 @@
     - name: Create Promtail configuration file
       copy:
         src: files/promtail-config.yaml
-        dest: /etc/promtail/promtail.yaml
+        dest: /etc/promtail/config.yaml
 
     - name: Reload systemd
       systemd:
