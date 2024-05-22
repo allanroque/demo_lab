@@ -24,6 +24,17 @@
         group: root
         mode: '0755'
 
+    - name: Set ACL permissions for Promtail on log directory
+      command: setfacl -R -m u:promtail:rX /var/log
+
+    - name: Ensure Promtail can write to /var/log/.positions.yaml
+      file:
+        path: /var/log/.positions.yaml
+        state: touch
+        owner: promtail
+        group: adm
+        mode: '0644'
+
     - name: Add promtail user to adm group
       user:
         name: promtail
