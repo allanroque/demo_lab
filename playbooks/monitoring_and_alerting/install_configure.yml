@@ -4,6 +4,9 @@
   become: yes
 
   tasks:
+    - name: Include Loky Playbook
+      import_tasks: loky.yml  
+
     - name: Include Blackbox Exporter Playbook
       import_tasks: blackbox_exporter.yml
 
@@ -12,6 +15,3 @@
 
     - name: Include Prometheus Playbook
       import_tasks: prometheus.yml
-
-    - name: Include Loky Playbook
-      import_tasks: loky.yml
