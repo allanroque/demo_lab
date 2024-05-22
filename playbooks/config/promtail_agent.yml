@@ -7,7 +7,7 @@
 
     - name: Create Grafana repo file
       copy:
-        src: files/grafanarepo
+        src: files/grafana.repo
         dest: /etc/yum.repos.d/grafana.repo
 
     - name: Install unzip package
