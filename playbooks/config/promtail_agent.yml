@@ -12,7 +12,7 @@
 
     - name: Install unzip package
       yum:
-        name: unzip
+        name: promtail
         state: present
       when: ansible_os_family == 'RedHat'
 
