@@ -24,6 +24,12 @@
         group: root
         mode: '0755'
 
+    - name: Add promtail user to adm group
+      user:
+        name: promtail
+        groups: adm
+        append: yes
+
     - name: Create Promtail configuration file
       copy:
         src: files/promtail-config.yaml
