@@ -16,14 +16,6 @@
         state: present
       when: ansible_os_family == 'RedHat'
 
-    - name: Create Promtail configuration directory
-      file:
-        path: /etc/promtail
-        state: directory
-        owner: root
-        group: root
-        mode: '0755'
-
     - name: Set ACL permissions for Promtail on log directory
       command: setfacl -R -m u:promtail:rX /var/log
 
