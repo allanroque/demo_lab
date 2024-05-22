@@ -1,0 +1,27 @@
+---
+- name: Create directory for Loki configuration
+  file:
+    path: /opt/loki
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Loki configuration file
+  copy:
+    src: files/loki-config.yaml
+    dest: /opt/loki/loki-config.yaml
+
+- name: Run Loki container
+  containers.podman.podman_container:
+    name: loki
+    image: grafana/loki:latest
+    state: started
+    ports:
+      - "3100:3100"
+    volumes:
+      - /opt/loki/loki-config.yaml:/etc/loki/local-config.yaml
+    dns_servers:
+      - 192.168.100.10
+      - 8.8.8.8
+  register: loki_result

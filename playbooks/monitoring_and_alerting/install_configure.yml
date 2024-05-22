@@ -12,3 +12,6 @@
 
     - name: Include Prometheus Playbook
       import_tasks: prometheus.yml
+
+    - name: Include Loky Playbook
+      import_tasks: loky.yml
