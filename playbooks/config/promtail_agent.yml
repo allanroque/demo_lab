@@ -1,0 +1,46 @@
+---
+- name: Install and configure Promtail on Linux nodes
+  hosts: INFRA
+  become: yes
+
+  tasks:
+
+    - name: Create Grafana repo file
+      copy:
+        src: files/grafanarepo
+        dest: /etc/yum.repos.d/grafana.repo
+
+    - name: Install unzip package
+      yum:
+        name: unzip
+        state: present
+      when: ansible_os_family == 'RedHat'
+
+    - name: Unzip Promtail binary
+      unarchive:
+        src: /tmp/promtail-linux-amd64.zip
+        dest: /usr/local/bin/
+        remote_src: yes
+
+    - name: Create Promtail configuration directory
+      file:
+        path: /etc/promtail
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Create Promtail configuration file
+      copy:
+        src: files/promtail-config.yaml
+        dest: /etc/promtail/promtail.yaml
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Promtail service
+      systemd:
+        name: promtail
+        enabled: yes
+        state: started

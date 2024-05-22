@@ -1,0 +1,27 @@
+---
+- name: Create directory for promtail configuration
+  file:
+    path: /opt/promtail
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create promtail configuration file
+  copy:
+    src: files/promtail-config.yaml
+    dest: /opt/promtail/promtail-config.yaml
+
+- name: Run promtail container
+  containers.podman.podman_container:
+    name: promtail
+    image: grafana/promtail:latest
+    state: started
+    ports:
+      - "3100:3100"
+    volumes:
+      - /opt/promtail/promtail-config.yaml:/etc/promtail/config.yaml
+    dns_servers:
+      - 192.168.100.10
+      - 8.8.8.8
+  register: loki_result
