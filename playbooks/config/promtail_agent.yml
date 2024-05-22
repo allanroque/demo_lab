@@ -16,12 +16,6 @@
         state: present
       when: ansible_os_family == 'RedHat'
 
-    - name: Unzip Promtail binary
-      unarchive:
-        src: /tmp/promtail-linux-amd64.zip
-        dest: /usr/local/bin/
-        remote_src: yes
-
     - name: Create Promtail configuration directory
       file:
         path: /etc/promtail
