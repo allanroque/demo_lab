@@ -1,0 +1,13 @@
+---
+- name: Execute OS Script
+  hosts: all
+  vars:
+    script_path: "/path/to/script.sh"  # Default value, can be overridden by Survey
+  tasks:
+    - name: Execute a script on remote server
+      ansible.builtin.shell: "{{ script_path }}"
+      register: script_output
+
+    - name: Display script output
+      debug:
+        var: script_output.stdout

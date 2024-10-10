@@ -1,0 +1,20 @@
+---
+- name: Execute SQL Query on PostgreSQL Database
+  hosts: db_servers
+  vars:
+    db_name: "example_db"  # Default database name
+    db_user: "postgres"  # Default database user
+    db_pass: "password"  # Default password
+    sql_query: "SELECT * FROM users;"  # Default SQL query
+  tasks:
+    - name: Execute SQL query
+      community.postgresql.postgresql_query:
+        db: "{{ db_name }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_pass }}"
+        query: "{{ sql_query }}"
+      register: query_result
+
+    - name: Display query result
+      debug:
+        var: query_result

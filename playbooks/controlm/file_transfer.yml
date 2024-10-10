@@ -1,0 +1,12 @@
+---
+- name: Transfer Files between Servers
+  hosts: source_server
+  vars:
+    source_file: "/path/to/local/file.txt"  # Default path for source file
+    destination_path: "/path/to/destination/file.txt"  # Default destination path
+  tasks:
+    - name: Copy file from source to destination
+      ansible.builtin.copy:
+        src: "{{ source_file }}"
+        dest: "{{ destination_path }}"
+      delegate_to: destination_server

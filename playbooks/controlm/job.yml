@@ -1,0 +1,24 @@
+---
+- name: AAP JOB
+  hosts: localhost
+  tasks:
+
+    - name: Show JOB
+      debug:
+        msg: "Wxwcutando Job Test"
+
+    - name: Show JOB
+      debug:
+        msg: "Wxwcutando Job Test"
+        
+    - name: Show JOB
+      debug:
+        msg: "Wxwcutando Job Test"
+        
+    - name: Show JOB
+      debug:
+        msg: "Wxwcutando Job Test"
+        
+    - name: Show JOB
+      debug:
+        msg: "Wxwcutando Job Test"
