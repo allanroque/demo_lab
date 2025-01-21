@@ -1,6 +1,6 @@
 ---
 - name: Configuração do chrony
-  hosts: infra
+  hosts: all
   become: yes
   gather_facts: yes
   tasks:
