@@ -1,7 +1,7 @@
 ---
 - name: Configure Message of the Day (MOTD)
   hosts: all
-  become: true  # Necessário para escrever no diretório /etc
+  become: true
   tasks:
     - name: Copy MOTD file to host
       ansible.builtin.template:

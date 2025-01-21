@@ -12,6 +12,7 @@
     - name: Verify SELinux status
       ansible.builtin.command: getenforce
       register: selinux_status
+      changed_when: False
 
     - name: Show SELinux status
       ansible.builtin.debug:
