@@ -12,7 +12,7 @@
 
     - name: Copiar o arquivo de configuração do chrony para o node
       copy:
-        src: files/chrony.conf
+        src: files/chrony.conf 
         dest: /etc/chrony.conf
         mode: 0644
         owner: root
