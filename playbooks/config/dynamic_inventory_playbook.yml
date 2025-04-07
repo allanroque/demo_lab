@@ -1,0 +1,24 @@
+---
+- name: Construir inventário dinâmico baseado em variável
+  hosts: localhost
+  gather_facts: false
+  vars:
+    lista_de_hosts:
+      - { name: "host1", ip: "192.168.0.101" }
+      - { name: "host2", ip: "192.168.0.102" }
+
+  tasks:
+    - name: Criar grupo dinâmico no inventário
+      add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.ip }}"
+        groups: grupo_dinamico
+      loop: "{{ lista_de_hosts }}"
+
+- name: Executar tarefas nos hosts dinâmicos
+  hosts: grupo_dinamico
+  gather_facts: false
+  tasks:
+    - name: Mostrar hostname e IP
+      debug:
+        msg: "Executando em {{ inventory_hostname }} com IP {{ ansible_host }}"
