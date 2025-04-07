@@ -22,3 +22,14 @@
     - name: Mostrar hostname e IP
       debug:
         msg: "Executando em {{ inventory_hostname }} com IP {{ ansible_host }}"
+
+    - name: Testar conectividade com ping
+      ansible.builtin.ping:
+      ignore_errors: true
+      register: resultado_ping
+
+    - name: Mostrar resultado do ping
+      debug:
+        msg: >
+          Resultado para {{ inventory_hostname }}:
+          {{ 'SUCESSO' if resultado_ping.ping is defined else 'FALHA' }}
