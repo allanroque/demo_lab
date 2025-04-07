@@ -3,17 +3,27 @@
   hosts: localhost
   gather_facts: false
   vars:
-    lista_de_hosts:
+    lista_de_hosts1:
       - { name: "host1", ip: "192.168.0.101" }
       - { name: "host2", ip: "192.168.0.102" }
+    lista_de_hosts2:
+      - { name: "host1.example.com", ip: "192.168.0.101" }
+      - { name: "host2.example.com", ip: "192.168.0.102" }
 
   tasks:
-    - name: Criar grupo dinâmico no inventário
+    - name: Criar grupo dinâmico no inventário lista1
       add_host:
         name: "{{ item.name }}"
         ansible_host: "{{ item.ip }}"
         groups: grupo_dinamico
-      loop: "{{ lista_de_hosts }}"
+      loop: "{{ lista_de_hosts1 }}"
+
+    - name: Criar grupo dinâmico no inventário lista2
+      add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.ip }}"
+        groups: grupo_dinamico
+      loop: "{{ lista_de_hosts2 }}"
 
 - name: Executar tarefas nos hosts dinâmicos
   hosts: grupo_dinamico
