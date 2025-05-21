@@ -4,10 +4,10 @@
   gather_facts: false
   vars:
     lista_de_hosts1:
-      - { name: "roque", ip: "192.168.0.101" }
+      - { name: "roque.roque", ip: "192.168.100.26" }
       - { name: "allan", ip: "192.168.0.102" }
     lista_de_hosts2:
-      - { name: "roque.example.com", ip: "192.168.0.101" }
+      - { name: "roque.example.com", ip: "192.168.100.26" }
       - { name: "allan.example.com", ip: "192.168.0.102" }
 
   tasks:
