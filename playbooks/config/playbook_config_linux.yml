@@ -1,0 +1,46 @@
+---
+- name: Playbook Principal - Linux Configuration Management
+  hosts: LINUX
+  become: true
+  gather_facts: true
+
+  vars:
+    config_dir: "../config"  # ou "playbooks/config" se preferir esse caminho
+
+  tasks:
+    - name: Importar configuração de hardening base
+      import_playbook: "{{ config_dir }}/config_basic_packages.yml"
+
+    - name: Configurar serviços essenciais
+      import_playbook: "{{ config_dir }}/config_basic_services.yml"
+
+    - name: Configurar logging do Ansible
+      import_playbook: "{{ config_dir }}/config_ansible_log.yml"
+
+    - name: Configurar motd
+      import_playbook: "{{ config_dir }}/config_motd.yml"
+
+    - name: Configurar agente virt
+      import_playbook: "{{ config_dir }}/config_agent_virt.yml"
+
+    - name: Configurar SELinux
+      import_playbook: "{{ config_dir }}/config_selinux.yml"
+
+    - name: Configurar Cockpit
+      import_playbook: "{{ config_dir }}/config_cockpit.yml"
+
+    - name: Configurar Red Hat Insights
+      import_playbook: "{{ config_dir }}/config_redhat_insights.yml"
+
+    - name: Configurar Chrony
+      import_playbook: "{{ config_dir }}/config-chrony.yml"
+
+    - name: Configurar parâmetros de kernel
+      import_playbook: "{{ config_dir }}/config_kernel_parameters.yml"
+
+    - name: Configurar usuários de serviço
+      import_playbook: "{{ config_dir }}/config_service_users.yml"
+
+
+#    - name: Configurar Promtail
+#      import_playbook: "{{ config_dir }}/promtail_agent.yml"

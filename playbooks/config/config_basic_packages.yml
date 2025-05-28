@@ -14,6 +14,7 @@
       - sysstat
       - tar
       - unzip
+      - audit
     pkgs_to_remove:
       - telnet
 

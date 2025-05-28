@@ -9,10 +9,15 @@
       - firewalld
       - chronyd
       - cockpit.socket
+      - auditd
     services_to_stop:
       - telnetd
       - ftpd
       - cups
+      - bluetooth
+      - avahi-daemon
+      - cups
+      - postfix
 
   tasks:
     - name: Start allowed services
