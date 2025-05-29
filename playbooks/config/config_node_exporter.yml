@@ -1,0 +1,68 @@
+# playbooks/config/install_node_exporter.yml
+---
+- name: Instalar e iniciar node_exporter em hosts Linux
+  hosts: LINUX
+  become: true
+
+  vars:
+    node_exporter_version: "1.8.1"
+    node_exporter_user: "nodeusr"
+    node_exporter_port: 9100
+
+  tasks:
+    - name: Criar usuário para o node_exporter
+      ansible.builtin.user:
+        name: "{{ node_exporter_user }}"
+        shell: /sbin/nologin
+
+    - name: Baixar binário do node_exporter
+      ansible.builtin.get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+        dest: "/tmp/node_exporter.tar.gz"
+        mode: '0644'
+
+    - name: Descompactar binário
+      ansible.builtin.unarchive:
+        src: "/tmp/node_exporter.tar.gz"
+        dest: "/usr/local/bin/"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Criar unidade systemd
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/node_exporter.service
+        content: |
+          [Unit]
+          Description=Prometheus Node Exporter
+          After=network.target
+
+          [Service]
+          User={{ node_exporter_user }}
+          Group={{ node_exporter_user }}
+          Type=simple
+          ExecStart=/usr/local/bin/node_exporter \
+            --web.listen-address=:{{ node_exporter_port }}
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0644'
+
+    - name: Reload systemd
+      become: true
+      systemd:
+        daemon_reload: yes
+
+    - name: Open port 9100 for node_exporter
+      firewalld:
+        port: 9100/tcp
+        permanent: true
+        state: enabled
+        immediate: true
+      ignore_errors: true
+
+    - name: Ativar e iniciar node_exporter
+      ansible.builtin.systemd:
+        name: node_exporter
+        enabled: true
+        state: started
+        daemon_reload: true

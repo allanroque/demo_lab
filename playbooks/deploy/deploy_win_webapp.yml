@@ -1,0 +1,71 @@
+---
+- name: Configure IIS on Windows
+  hosts: database_servers
+  gather_facts: true
+
+  vars:
+    iis_sites:
+      - name: 'Web Streaming'
+        port: '80'
+        path: 'C:\sites\webapp'
+
+  tasks:
+
+    - name: Install IIS
+      ansible.windows.win_feature:
+        name: Web-Server
+        state: present
+
+    - name: Create site directory structure
+      ansible.windows.win_file:
+        path: "{{ item.path }}"
+        state: directory
+      with_items: "{{ iis_sites }}"
+
+    - name: Open port for site on the firewall
+      community.windows.win_firewall_rule:
+        name: "iisport{{ item.port }}"
+        enable: true
+        state: present
+        localport: "{{ item.port }}"
+        action: Allow
+        direction: In
+        protocol: Tcp
+      with_items: "{{ iis_sites }}"
+
+    - name: Create site directory structure
+      ansible.windows.win_file:
+        path: C:\repo
+        state: directory
+    
+    - name: Execute PowerShell script to clone the Git repository
+      win_shell: |
+        $repositoryUrl = "https://github.com/nmartins0611/aap25-roadshow-content.git"
+        $targetFolder = "C:\repo"
+
+        # Ensure the target folder does not already exist
+        if (Test-Path $targetFolder) {
+            Write-Host "Target folder '$targetFolder' already exists. Deleting it to ensure a fresh clone."
+            Remove-Item -Recurse -Force -Path $targetFolder
+        }
+
+        # Clone the repository
+        Write-Host "Cloning repository from $repositoryUrl into $targetFolder..."
+        git clone $repositoryUrl $targetFolder
+
+      args:
+        executable: powershell
+
+    - name: Copy folder contents recursively
+      ansible.windows.win_copy:
+       src: C:\repo\lab-resources\
+       dest: C:\inetpub\wwwroot
+       remote_src: true
+      notify: restart_iis
+
+  handlers:
+    - name: restart_iis
+      ansible.windows.win_service:
+        name: W3Svc
+        state: restarted
+        start_mode: auto

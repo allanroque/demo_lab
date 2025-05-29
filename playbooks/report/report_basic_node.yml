@@ -1,0 +1,27 @@
+---
+- name: Gather Node details
+  hosts: webservers
+  become: yes
+  gather_facts: true
+  
+  tasks:
+  
+    - name: Collect machine details
+      ansible.builtin.set_fact:
+        machine_details:
+          Hostname: "{{ ansible_facts['hostname'] }}"
+          FQDN: "{{ ansible_facts['fqdn'] | default('N/A') }}"
+          OS: "{{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+          Kernel_Version: "{{ ansible_facts['kernel'] }}"
+          Architecture: "{{ ansible_facts['architecture'] }}"
+          CPU_Model: "{{ ansible_facts['processor'][0] }}"
+          CPU_Cores: "{{ ansible_facts['processor_cores'] | default('N/A') }}"
+          Total_Memory_MB: "{{ ansible_facts['memtotal_mb'] }}"
+          Total_Swap_MB: "{{ ansible_facts['swaptotal_mb'] }}"
+          Default_IPv4_Address: "{{ ansible_facts['default_ipv4']['address'] }}"
+          Default_IPv4_Interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
+          Disk_Information: "{{ ansible_facts['devices'] | join(', ') }}"
+
+    - name: Print machine details in JSON format
+      ansible.builtin.debug:
+        msg: "{{ machine_details | to_nice_json }}"
