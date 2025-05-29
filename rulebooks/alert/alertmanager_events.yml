@@ -31,8 +31,8 @@
       condition: event.alert.labels.alertname == "SELinuxDisabled" and event.alert.status == "firing"
       action:
         run_job_template:
-          name: Apply baseline                # Nome do template no Controller
-          organization: Default               # Organização do Controller
+          name: "CONFIG - SELinux"
+          organization: ITOPS
           job_args:
             limit: "{{ event.meta.hosts }}"   # Aplica apenas ao host do alerta
 
