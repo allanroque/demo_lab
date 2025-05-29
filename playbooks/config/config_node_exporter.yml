@@ -1,4 +1,3 @@
----
 - name: Instalar e iniciar node_exporter em hosts Linux
   hosts: LINUX
   become: true
@@ -7,6 +6,7 @@
     node_exporter_version: "1.8.1"
     node_exporter_user: "nodeusr"
     node_exporter_port: 9100
+    tmp_dir: "/tmp/node_exporter_extract"
 
   tasks:
 
@@ -36,18 +36,29 @@
 
     - name: Criar diretório temporário de extração
       file:
-        path: /tmp/node_exporter_extract
+        path: "{{ tmp_dir }}"
         state: directory
 
-    - name: Descompactar o node_exporter
+    - name: Descompactar node_exporter
       unarchive:
         src: /tmp/node_exporter.tar.gz
-        dest: /tmp/node_exporter_extract
+        dest: "{{ tmp_dir }}"
         remote_src: yes
+
+    - name: Obter nome do diretório extraído
+      find:
+        paths: "{{ tmp_dir }}"
+        file_type: directory
+        patterns: "node_exporter-*"
+      register: extracted_dir
+
+    - name: Definir caminho do binário extraído
+      set_fact:
+        extracted_bin_path: "{{ extracted_dir.files[0].path }}/node_exporter"
 
     - name: Copiar binário para /usr/local/bin
       copy:
-        src: "/tmp/node_exporter_extract/node_exporter-{{ node_exporter_version }}.linux-{{ arch_suffix }}/node_exporter"
+        src: "{{ extracted_bin_path }}"
         dest: /usr/local/bin/node_exporter
         mode: '0755'
         remote_src: true
