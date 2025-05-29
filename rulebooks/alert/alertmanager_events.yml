@@ -30,11 +30,14 @@
     - name: SELinux Disabled - Firing
       condition: event.alert.labels.alertname == "SELinuxDisabled" and event.alert.status == "firing"
       action:
-        run_job_template:
-          name: "CONFIG - SELinux"
-          organization: ITOPS
-          job_args:
-            limit: "{{ event.meta.hosts }}"   # Aplica apenas ao host do alerta
+        - set_fact:
+            hostname: "{{ event.alert.labels.instance }}"
+            alerta: "{{ event.alert.labels.alertname }}"
+        - run_job_template:
+            name: "CONFIG - SELinux"
+            organization: ITOPS
+            job_args:
+              limit: "{{ event.meta.hosts }}"   # Aplica apenas ao host do alerta
 
     # -------------------------------------------
     # Alerta: SELinux foi reabilitado (status: resolved)
