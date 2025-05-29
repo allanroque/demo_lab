@@ -57,7 +57,7 @@
       condition: event.alert.labels.alertname == "HighFilesystemUsage" and event.alert.status == "firing"
       action:
         run_job_template:
-          name: Remediate disk space alert
+          name: "SH - Disk Space"
           organization: Default
           job_args:
             limit: "{{ event.meta.hosts }}"
