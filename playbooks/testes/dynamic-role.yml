@@ -1,3 +1,8 @@
+---
+- name: Execução genérica de roles via AAP
+  hosts: all
+  gather_facts: false 
+
   tasks:
     - name: DEBUG - Mostrar role_name e variáveis resolvidas
       debug:
