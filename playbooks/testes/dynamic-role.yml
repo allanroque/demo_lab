@@ -5,7 +5,11 @@
   become: true
 
   vars:
-    role_name: "{{ role_name | default('') }}"
+    role_name1: redhat.rhel_system_roles.selinux
+    role_vars: |
+      selinux_state: enforcing
+      selinux_policy: targeted
+    role_name: "{{ role_name1 | default('') }}"
     role_vars_yaml: "{{ role_vars | default('{}') }}"
     parsed_vars: "{{ role_vars_yaml | from_yaml }}"
 
