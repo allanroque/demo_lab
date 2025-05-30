@@ -4,24 +4,23 @@
 
   vars:
     role_full_path: "{{ role_name }}"
-    role_vars_dict: >-
-      {% if role_vars | default('') | length > 0 %}
-        {{ role_vars | from_yaml }}
-      {% else %}
-        {}
-      {% endif %}
+    raw_vars: "{{ role_vars | default('{}') }}"
 
   pre_tasks:
     - name: Validar que role_vars é YAML válido e um dicionário
       delegate_to: localhost
       assert:
         that:
-          - role_vars_dict is mapping
+          - raw_vars | from_yaml is mapping
         fail_msg: "Erro: o campo 'role_vars' precisa ser YAML válido no formato de dicionário."
         success_msg: "YAML validado com sucesso."
 
+    - name: Definir role_vars_dict a partir do YAML
+      set_fact:
+        role_vars_dict: "{{ raw_vars | from_yaml }}"
+
   tasks:
-    - name: Executar role de forma dinâmica
+    - name: Executar role dinamicamente
       include_role:
         name: "{{ role_full_path }}"
       vars: "{{ role_vars_dict }}"
