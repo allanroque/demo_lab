@@ -1,13 +1,27 @@
-- name: Executa uma role arbitrária com variáveis informadas via survey
+- name: Execução genérica de roles via AAP
   hosts: all
   gather_facts: false
 
   vars:
     role_full_path: "{{ role_name }}"
-    role_vars_dict: "{{ (role_vars | default('{}')) | from_yaml }}"
+    role_vars_dict: >-
+      {% if role_vars | default('') | length > 0 %}
+        {{ role_vars | from_yaml }}
+      {% else %}
+        {}
+      {% endif %}
+
+  pre_tasks:
+    - name: Validar que role_vars é YAML válido e um dicionário
+      delegate_to: localhost
+      assert:
+        that:
+          - role_vars_dict is mapping
+        fail_msg: "Erro: o campo 'role_vars' precisa ser YAML válido no formato de dicionário."
+        success_msg: "YAML validado com sucesso."
 
   tasks:
-    - name: Executar role dinâmica
+    - name: Executar role de forma dinâmica
       include_role:
         name: "{{ role_full_path }}"
       vars: "{{ role_vars_dict }}"
