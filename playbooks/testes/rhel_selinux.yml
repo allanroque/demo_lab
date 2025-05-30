@@ -1,0 +1,12 @@
+---
+- name: Configurar SELinux com role oficial
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    selinux_state: enforcing
+    selinux_policy: targeted
+
+  roles:
+    - redhat.rhel_system_roles.selinux

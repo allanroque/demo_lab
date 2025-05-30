@@ -1,0 +1,17 @@
+---
+- name: Configurar sincronização de tempo (NTP)
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    timesync_ntp_servers:
+      - hostname: a.ntp.br
+        iburst: true
+      - hostname: b.ntp.br
+        iburst: true
+      - hostname: c.ntp.br
+        iburst: true
+
+  roles:
+    - redhat.rhel_system_roles.timesync
