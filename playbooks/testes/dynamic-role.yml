@@ -5,8 +5,41 @@
   become: true
 
   vars:
+    role_name: "{{ role_name | default('') }}"
+    role_vars_yaml: "{{ role_vars | default('{}') }}"
+    parsed_vars: "{{ role_vars_yaml | from_yaml }}"
 
+  pre_tasks:
+
+    - name: Converter role_vars YAML para dicionário real
+      set_fact:
+        role_vars_dict: "{{ role_vars | from_yaml }}"
+
+    - name: DEBUG - Verificar role e variáveis resolvidas
+      debug:
+        msg:
+          - "Role: {{ role_name }}"
+          - "role_vars_yaml: {{ role_vars_yaml }}"
+          - "role_vars_yaml: {{ role_vars_yaml | type_debug }}"          
+          - "parsed_vars: {{ parsed_vars }}"
+          - "parsed_vars type: {{ parsed_vars | type_debug }}"
+          - "parsed_vars: {{ role_vars_dict }}"
+          - "parsed_vars type: {{ role_vars_dict | type_debug }}"
+
+    - name: Exportar variáveis para painel do AAP (set_stats)
+      set_stats:
+        data:
+          __debug_role_name: "{{ role_name }}"
+          __debug_role_vars_yaml: "{{ role_vars_yaml }}"
+          __debug_role_vars_yaml_type: "{{ role_vars_yaml | type_debug }}"
+          __debug_parsed_vars: "{{ parsed_vars }}"
+          __debug_parsed_vars_type: "{{ parsed_vars | type_debug }}"
+          __debug_role_vars_dict: "{{ role_vars_dict }}"
+          __debug_role_vars_dict_type: "{{ role_vars_dict | type_debug }}"
+
+  
   tasks:
     - name: Executar role dinamicamente
       include_role:
         name: "{{ role_name }}"
+      vars: parsed_vars
