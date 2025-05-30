@@ -5,12 +5,10 @@
   become: true
 
   vars:
-    # Simulando entrada do survey
+    # Estas variáveis vêm do survey
     role_name:
     role_vars:
     parsed_vars: "{{ role_vars | default('{}') | from_yaml }}"
-    set_fact: "{{ role_vars | default('{}') | from_yaml }}"
-
 
   pre_tasks:
     - name: Validar que role_vars é YAML válido (dicionário)
@@ -21,7 +19,7 @@
         fail_msg: "Erro: role_vars precisa ser YAML válido no formato de dicionário"
         success_msg: "YAML validado com sucesso"
 
-    - name: Expor as variáveis para a role
+    - name: Expor as variáveis individuais da role
       set_fact: "{{ parsed_vars }}"
 
   tasks:
