@@ -9,6 +9,7 @@
     role_name:
     role_vars:
     parsed_vars: "{{ role_vars | default('{}') | from_yaml }}"
+    set_fact: "{{ role_vars | default('{}') | from_yaml }}"
 
 
   pre_tasks:
