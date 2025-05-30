@@ -6,7 +6,7 @@
 
   vars:
     # Simulando entrada do survey
-    role_name: redhat.rhel_system_roles.timesync
+    role_name:
     role_vars:
     parsed_vars: "{{ role_vars | default('{}') | from_yaml }}"
 
