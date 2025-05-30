@@ -1,26 +1,7 @@
-- name: Execução genérica de roles via AAP
-  hosts: all
-  gather_facts: false
-
-  vars:
-    role_full_path: "{{ role_name }}"
-    role_vars_safe: "{{ role_vars | default('{}') | from_yaml }}"
-
-  pre_tasks:
-    - name: Validar que role_vars é um dicionário
-      delegate_to: localhost
-      assert:
-        that:
-          - role_vars_safe is mapping
-        fail_msg: "Erro: 'role_vars' precisa ser um YAML no formato de dicionário"
-
-    - name: Armazenar variáveis da role em fato
-      set_fact:
-        resolved_role_vars: "{{ role_vars_safe }}"
-
   tasks:
-    - name: Executar role dinamicamente com variáveis
-      block:
-        - include_role:
-            name: "{{ role_full_path }}"
-      vars: "{{ resolved_role_vars }}"
+    - name: DEBUG - Mostrar role_name e variáveis resolvidas
+      debug:
+        msg:
+          - "Role: {{ role_full_path }}"
+          - "Variáveis:"
+          - "{{ resolved_role_vars }}"
