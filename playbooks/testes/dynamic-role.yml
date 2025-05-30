@@ -1,36 +1,32 @@
 ---
-- name: Teste com parsing dinâmico de role_vars
+- name: Executar role dinamicamente com variáveis do survey
   hosts: all
   gather_facts: false
   become: true
 
   vars:
-    # Simula o input do survey
-    role_name: linux-system-roles.timesync
-    role_vars: |-
-      timesync_ntp_servers:
-        - hostname: a.ntp.br
-          iburst: true
-        - hostname: b.ntp.br
-          iburst: true
-        - hostname: c.ntp.br
-          iburst: true
+    parsed_vars: "{{ role_vars | default('{}') | from_yaml }}"
 
   pre_tasks:
-    - name: Validar e transformar role_vars em dicionário
-      set_fact:
-        resolved_role_vars: "{{ role_vars | from_yaml }}"
+    - name: Validar que role_vars é YAML válido (dicionário)
+      delegate_to: localhost
+      assert:
+        that:
+          - parsed_vars is mapping
+        fail_msg: "Erro: role_vars precisa ser YAML válido no formato de dicionário"
+        success_msg: "YAML validado com sucesso"
 
-    - name: Expor cada variável do dicionário como variável normal
-      set_fact: "{{ resolved_role_vars }}"
+    - name: Expor as variáveis para a role
+      set_fact: "{{ parsed_vars }}"
 
   tasks:
-    - name: DEBUG - Mostrar role e variáveis
+    - name: DEBUG - Verificar role e variáveis resolvidas
       debug:
         msg:
-          - "Executando role: {{ role_name }}"
-          - "Variáveis resolvidas: {{ resolved_role_vars }}"
+          - "Role: {{ role_name }}"
+          - "Variáveis resolvidas:"
+          - "{{ parsed_vars }}"
 
-    - name: Executar a role diretamente (sem vars:)
+    - name: Executar role dinamicamente
       include_role:
         name: "{{ role_name }}"
