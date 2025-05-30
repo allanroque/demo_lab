@@ -6,7 +6,7 @@
 
   vars:
     # Simulando entrada do survey
-    role_name: linux-system-roles.timesync
+    role_name: redhat.rhel_system_roles.timesync
     role_vars: |-
       timesync_ntp_servers:
         - hostname: a.ntp.br
