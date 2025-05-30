@@ -1,12 +1,33 @@
 ---
-- name: Execução genérica de roles via AAP
+- name: Teste simulado com role e variáveis em formato de survey
   hosts: all
-  gather_facts: false 
+  gather_facts: false
+  become: true
+
+  vars:
+    # Simulando entrada do survey
+    role_name: linux-system-roles.timesync
+    role_vars: |-
+      timesync_ntp_servers:
+        - hostname: a.ntp.br
+          iburst: true
+        - hostname: b.ntp.br
+          iburst: true
+        - hostname: c.ntp.br
+          iburst: true
+
+    # Parsing como no playbook genérico
+    resolved_role_vars: "{{ role_vars | from_yaml }}"
 
   tasks:
-    - name: DEBUG - Mostrar role_name e variáveis resolvidas
+    - name: DEBUG - Verificar role e variáveis convertidas
       debug:
         msg:
           - "Role: {{ role_name }}"
-          - "Variáveis:"
-          - "{{ role_vars }}"
+          - "Vars: {{ resolved_role_vars }}"
+
+    - name: Executar role de forma estática usando variáveis parseadas
+      block:
+        - include_role:
+            name: "{{ role_name }}"
+      vars: "{{ resolved_role_vars }}"
