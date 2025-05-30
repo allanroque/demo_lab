@@ -5,14 +5,6 @@
   become: true
 
   vars:
-    role_name: "{{ role_name | default('') }}"
-    parsed_vars: "{{ role_vars_yaml | from_yaml }}"
-
-  pre_tasks:
-
-    - name: Converter role_vars YAML para dicionário real
-      set_fact:
-        role_vars_dict: "{{ role_vars | from_yaml }}"
 
   tasks:
     - name: Executar role dinamicamente
