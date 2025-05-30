@@ -11,6 +11,10 @@
 
   pre_tasks:
 
+    - name: Converter role_vars YAML para dicionário real
+      set_fact:
+        role_vars_dict: "{{ role_vars | from_yaml }}"
+
     - name: DEBUG - Verificar role e variáveis resolvidas
       debug:
         msg:
@@ -19,7 +23,8 @@
           - "role_vars_yaml: {{ role_vars_yaml | type_debug }}"          
           - "parsed_vars: {{ parsed_vars }}"
           - "parsed_vars type: {{ parsed_vars | type_debug }}"
-
+          - "parsed_vars: {{ role_vars_dict }}"
+          - "parsed_vars type: {{ role_vars_dict | type_debug }}"
   tasks:
     - name: Executar role dinamicamente
       include_role:
