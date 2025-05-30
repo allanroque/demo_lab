@@ -30,6 +30,10 @@
           - "Variáveis resolvidas:"
           - "{{ parsed_vars }}"
 
+    - name: Verificar tipo de parsed_vars
+      debug:
+        msg: "Tipo: {{ parsed_vars | type_debug }}"
+
     - name: Executar role dinamicamente
       include_role:
         name: "{{ role_name }}"
