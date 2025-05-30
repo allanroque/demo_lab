@@ -33,3 +33,37 @@
     - name: Executar role dinamicamente
       include_role:
         name: "{{ role_name }}"
+
+
+
+---
+- name: Executar role dinamicamente com variáveis do survey
+  hosts: all
+  gather_facts: false
+  become: true
+
+  vars:
+    # Entradas via survey
+    role_name:
+    role_vars:
+    parsed_vars: "{{ role_vars | default('{}') | from_yaml }}"
+
+  pre_tasks:
+    - name: Validar que role_vars é YAML válido (dicionário)
+      delegate_to: localhost
+      assert:
+        that:
+          - parsed_vars is mapping
+        fail_msg: "Erro: role_vars precisa ser YAML válido no formato de dicionário"
+        success_msg: "YAML validado com sucesso"
+
+    - name: DEBUG - Mostrar role e variáveis resolvidas
+      debug:
+        msg:
+          - "Role: {{ role_name }}"
+          - "Variáveis resolvidas:"
+          - "{{ parsed_vars }}"
+
+  roles:
+    - role: "{{ role_name }}"
+#      vars: "{{ parsed_vars }}"
