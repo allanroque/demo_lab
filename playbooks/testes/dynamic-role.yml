@@ -1,12 +1,12 @@
 - name: Manage timesync with 3 servers
-  hosts: all
+  hosts: targets
   vars:
-     timesync_ntp_servers:
-        - hostname: foo.example.com
-          iburst: true
-        - hostname: bar.example.com
-          iburst: true
-        - hostname: baz.example.com
-          iburst: true
+    timesync_ntp_servers:
+      - hostname: foo.example.com
+        iburst: true
+      - hostname: bar.example.com
+        iburst: true
+      - hostname: baz.example.com
+        iburst: true
   roles:
-     - linux-system-roles.timesync
+    - redhat.rhel_system_roles.timesync
