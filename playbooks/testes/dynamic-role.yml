@@ -14,6 +14,11 @@
     parsed_vars: "{{ role_vars_yaml | from_yaml }}"
 
   pre_tasks:
+    - name: DEBUG - Verificar tipo e conteúdo corretamente
+      debug:
+        msg:
+         - "role_vars_dict type: {{ role_vars_dict | type_debug }}"
+         - "role_vars_dict value: {{ role_vars_dict }}"
 
     - name: Converter role_vars YAML para dicionário real
       set_fact:
