@@ -1,5 +1,5 @@
 - name: Manage timesync with 3 servers
-  hosts: targets
+  hosts: all
   vars:
     timesync_ntp_servers:
       - hostname: foo.example.com
