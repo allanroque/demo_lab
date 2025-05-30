@@ -1,10 +1,11 @@
 ---
-- name: Teste simulado com entrada do tipo survey
+- name: Teste com parsing dinâmico de role_vars
   hosts: all
   gather_facts: false
   become: true
 
   vars:
+    # Simula o input do survey
     role_name: linux-system-roles.timesync
     role_vars: |-
       timesync_ntp_servers:
@@ -20,19 +21,16 @@
       set_fact:
         resolved_role_vars: "{{ role_vars | from_yaml }}"
 
+    - name: Expor cada variável do dicionário como variável normal
+      set_fact: "{{ resolved_role_vars }}"
+
   tasks:
-    - name: DEBUG - Mostrar variáveis
+    - name: DEBUG - Mostrar role e variáveis
       debug:
         msg:
-          - "Role: {{ role_name }}"
-          - "Vars resolvidas:"
-          - "{{ resolved_role_vars }}"
+          - "Executando role: {{ role_name }}"
+          - "Variáveis resolvidas: {{ resolved_role_vars }}"
 
-    - name: Injetar variáveis dinamicamente para execução da role
-      set_fact:
-        timesync_vars: "{{ resolved_role_vars }}"
-
-    - name: Executar role usando vars preparadas
+    - name: Executar a role diretamente (sem vars:)
       include_role:
         name: "{{ role_name }}"
-      vars: "{{ timesync_vars }}"
