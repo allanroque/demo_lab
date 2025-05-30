@@ -15,6 +15,8 @@
           iburst: true
         - hostname: c.ntp.br
           iburst: true
+    parsed_vars: "{{ role_vars | default('{}') | from_yaml }}"
+
 
   pre_tasks:
     - name: Validar que role_vars é YAML válido (dicionário)
