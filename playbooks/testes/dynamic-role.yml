@@ -5,6 +5,16 @@
   become: true
 
   vars:
+    # Simula o input do survey
+    role_name: linux-system-roles.timesync
+    role_vars: |-
+      timesync_ntp_servers:
+        - hostname: a.ntp.br
+          iburst: true
+        - hostname: b.ntp.br
+          iburst: true
+        - hostname: c.ntp.br
+          iburst: true
     parsed_vars: "{{ role_vars | default('{}') | from_yaml }}"
 
   pre_tasks:
