@@ -51,4 +51,4 @@
     - name: Executar role dinamicamente
       include_role:
         name: "{{ role_name }}"
-      vars: "{{ debug_role_vars_dict }}"
+#      vars: "{{ debug_role_vars_dict }}"
