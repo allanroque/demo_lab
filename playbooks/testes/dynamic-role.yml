@@ -4,7 +4,7 @@
 
   vars:
     role_full_path: "{{ role_name }}"
-    role_vars_dict: "{{ role_vars | from_yaml }}"
+    role_vars_dict: "{{ (role_vars | default('{}')) | from_yaml }}"
 
   tasks:
     - name: Executar role dinâmica
