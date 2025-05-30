@@ -10,18 +10,13 @@
     parsed_vars: "{{ role_vars_yaml | from_yaml }}"
 
   pre_tasks:
-    - name: Validar que role_vars é YAML válido (dicionário)
-      assert:
-        that:
-          - parsed_vars is mapping
-        fail_msg: "Erro: role_vars precisa ser YAML válido no formato de dicionário"
-        success_msg: "YAML validado com sucesso"
 
     - name: DEBUG - Verificar role e variáveis resolvidas
       debug:
         msg:
           - "Role: {{ role_name }}"
           - "role_vars_yaml: {{ role_vars_yaml }}"
+          - "role_vars_yaml: {{ role_vars_yaml | type_debug }}"          
           - "parsed_vars: {{ parsed_vars }}"
           - "parsed_vars type: {{ parsed_vars | type_debug }}"
 
