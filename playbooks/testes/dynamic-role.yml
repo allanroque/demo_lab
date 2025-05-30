@@ -1,12 +1,41 @@
-- name: Manage timesync with 3 servers
+---
+- name: Executar role dinamicamente com variáveis do survey
   hosts: all
+  gather_facts: false
+  become: true
+
   vars:
-    timesync_ntp_servers:
-      - hostname: foo.example.com
-        iburst: true
-      - hostname: bar.example.com
-        iburst: true
-      - hostname: baz.example.com
-        iburst: true
-  roles:
-    - redhat.rhel_system_roles.timesync
+    # Simulando entrada do survey
+    role_name: linux-system-roles.timesync
+    role_vars: |-
+      timesync_ntp_servers:
+        - hostname: a.ntp.br
+          iburst: true
+        - hostname: b.ntp.br
+          iburst: true
+        - hostname: c.ntp.br
+          iburst: true
+
+  pre_tasks:
+    - name: Validar que role_vars é YAML válido (dicionário)
+      delegate_to: localhost
+      assert:
+        that:
+          - parsed_vars is mapping
+        fail_msg: "Erro: role_vars precisa ser YAML válido no formato de dicionário"
+        success_msg: "YAML validado com sucesso"
+
+    - name: Expor as variáveis para a role
+      set_fact: "{{ parsed_vars }}"
+
+  tasks:
+    - name: DEBUG - Verificar role e variáveis resolvidas
+      debug:
+        msg:
+          - "Role: {{ role_name }}"
+          - "Variáveis resolvidas:"
+          - "{{ parsed_vars }}"
+
+    - name: Executar role dinamicamente
+      include_role:
+        name: "{{ role_name }}"
