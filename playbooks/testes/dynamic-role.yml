@@ -1,0 +1,13 @@
+- name: Executa uma role arbitrária com variáveis informadas via survey
+  hosts: all
+  gather_facts: false
+
+  vars:
+    role_full_path: "{{ role_name }}"
+    role_vars_dict: "{{ role_vars | from_yaml }}"
+
+  tasks:
+    - name: Executar role dinâmica
+      include_role:
+        name: "{{ role_full_path }}"
+      vars: "{{ role_vars_dict }}"
