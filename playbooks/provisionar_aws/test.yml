@@ -1,10 +1,10 @@
 - name: Executar comando via SSM
   hosts: all
   gather_facts: false
+
   collections:
-    - name: community.aws
+    - community.aws
 
   tasks:
-
     - name: Rodar comando date
       ansible.builtin.shell: date
