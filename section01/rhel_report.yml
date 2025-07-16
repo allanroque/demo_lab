@@ -76,7 +76,8 @@
       set_fact:
         date_str: "{{ date }}_{{ hms }}"
         date_str_pretty: "{{ date }} {{ hms_pretty }}"
-        kernels_list: '{{ hostvars | json_query(kernel_query) | unique | sort }}'
+        #kernels_list: '{{ hostvars | json_query(kernel_query) | unique | sort }}'
+        kernels_list: "{{ hostvars | dict2items | map(attribute='value.ansible_kernel') | unique | sort }}"
         success_list: '{{ hostvars | dict2items | json_query(success_query) }}'
         failed_list: '{{ hostvars | dict2items | json_query(failed_query) }}'
         missing_list: '{{ hostvars | dict2items | json_query(missing_query) }}'
