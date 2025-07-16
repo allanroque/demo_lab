@@ -76,19 +76,65 @@
       set_fact:
         date_str: "{{ date }}_{{ hms }}"
         date_str_pretty: "{{ date }} {{ hms_pretty }}"
-        #kernels_list: '{{ hostvars | json_query(kernel_query) | unique | sort }}'
-        kernels_list: "{{ hostvars | dict2items | map(attribute='value.ansible_kernel') | unique | sort }}"
-        success_list: '{{ hostvars | dict2items | json_query(success_query) }}'
-        failed_list: '{{ hostvars | dict2items | json_query(failed_query) }}'
-        missing_list: '{{ hostvars | dict2items | json_query(missing_query) }}'
+        kernels_list: >-
+          {{
+            hostvars
+            | dict2items
+            | map(attribute='value.ansible_kernel')
+            | select('defined')
+            | unique
+            | sort
+            | list
+          }}
+        success_list: >-
+          {{
+            hostvars
+            | dict2items
+            | selectattr('value.job_success', 'defined')
+            | selectattr('value.job_success', 'equalto', true)
+            | map(attribute='key')
+            | list
+          }}
+        failed_list: >-
+          {{
+            hostvars
+            | dict2items
+            | selectattr('value.job_success', 'defined')
+            | selectattr('value.job_success', 'equalto', false)
+            | selectattr('value.missing', 'defined')
+            | selectattr('value.missing', 'equalto', false)
+            | map(attribute='key')
+            | list
+          }}
+        missing_list: >-
+          {{
+            hostvars
+            | dict2items
+            | selectattr('value.missing', 'defined')
+            | selectattr('value.missing', 'equalto', true)
+            | map(attribute='key')
+            | list
+          }}
       vars:
-        kernel_query: "*.ansible_kernel"
-        success_query: "[?value.job_success==`true`].key"
-        failed_query: "[?value.job_success==`false` && value.missing==`false`].key"
-        missing_query: "[?value.missing==`true`].key"
         date: "{{ '%Y-%m-%d' | strftime }}"
         hms_pretty: "{{ '%H:%M:%S' | strftime }}"
         hms: "{{ hms_pretty | replace(':','-') }}"
+#      set_fact:
+#        date_str: "{{ date }}_{{ hms }}"
+#        date_str_pretty: "{{ date }} {{ hms_pretty }}"
+        #kernels_list: '{{ hostvars | json_query(kernel_query) | unique | sort }}'
+#        kernels_list: "{{ hostvars | dict2items | map(attribute='value.ansible_kernel') | unique | sort }}"
+#        success_list: '{{ hostvars | dict2items | json_query(success_query) }}'
+#        failed_list: '{{ hostvars | dict2items | json_query(failed_query) }}'
+#        missing_list: '{{ hostvars | dict2items | json_query(missing_query) }}'
+#      vars:
+#        kernel_query: "*.ansible_kernel"
+#        success_query: "[?value.job_success==`true`].key"
+#        failed_query: "[?value.job_success==`false` && value.missing==`false`].key"
+#        missing_query: "[?value.missing==`true`].key"
+#        date: "{{ '%Y-%m-%d' | strftime }}"
+#        hms_pretty: "{{ '%H:%M:%S' | strftime }}"
+#        hms: "{{ hms_pretty | replace(':','-') }}"
 
     - name: Save job report
       template:
