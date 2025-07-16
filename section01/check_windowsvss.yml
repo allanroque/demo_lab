@@ -1,0 +1,16 @@
+---
+- name: Check for VSS Snapshots
+  hosts: domain_controllers
+
+  tasks:
+
+    - name: Retrieve details of all shadow copies
+      win_shell: |
+        vssadmin list shadows
+      register: shadow_list_output
+      ignore_errors: true
+      no_log: true
+
+    - name: Display summarized shadow copies
+      debug:
+        msg: "{{ shadow_list_output }}"

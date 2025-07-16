@@ -1,0 +1,71 @@
+---
+- name: XFS Backup and Restore Playbook
+  hosts: Streaming_Infrastucture
+  become: true
+  vars:
+    xfs_mount_point: "/"    # The XFS filesystem mount point to back up
+    backup_file: "/backup/data_{{ inventory_hostname }}_{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '') }}.xfsdump"
+    backup_label: "backup_{{ ansible_date_time.iso8601 }}" # Label for the xfsdump operation
+
+  tasks:
+
+    # - name: Check available disk space
+    #   ansible.builtin.command:
+    #     cmd: df --output=avail -h / | tail -n 1
+    #   register: disk_space
+    #   changed_when: false
+
+    # - name: Skip the host if disk space is less than 5GB
+    #   ansible.builtin.debug:
+    #     msg: "Available disk space is less than 5GB. Skipping this host. Disk space: {{ disk_space.stdout }}"
+    #   when: disk_space.stdout | int < 5
+    #   meta: end_play
+  
+    - name: Check if xfsdump is installed
+      ansible.builtin.yum:
+        name: xfsdump
+        state: present
+      when: ansible_facts.os_family == "RedHat"
+
+    - name: Ensure the backup directory exists
+      ansible.builtin.file:
+        path: "{{ backup_file | dirname }}"
+        state: directory
+        mode: '0755'
+
+    - name: Perform xfsdump backup
+      ansible.builtin.command:
+        cmd: >
+          xfsdump -l 0 -L {{ backup_label }}
+          -f {{ backup_file }} {{ xfs_mount_point }} 
+      register: backup_result
+      ignore_errors: no
+
+    - name: Verify xfsdump success
+      ansible.builtin.debug:
+        msg: "Backup completed successfully: {{ backup_result.stdout }}"
+
+    - name: Verify the dumps
+      ansible.builtin.command:
+        cmd: ls -l "{{ backup_file | dirname }}"
+      register: dir_listing
+
+    - name: Show the directory listing
+      ansible.builtin.debug:
+        var: dir_listing.stdout
+
+    # - name: Restore from XFS dump
+    #   block:
+    #    - name: Perform xfsrestore
+    #      ansible.builtin.command:
+    #       cmd: >
+    #         xfsrestore -f {{ backup_file }} {{ restore_point }}
+    #      register: restore_result
+    #      ignore_errors: no
+
+    #    - name: Verify xfsrestore success
+    #      ansible.builtin.debug:
+    #       msg: "Restore completed successfully: {{ restore_result.stdout }}"
+    #   tags:
+    #     - never
+    #     - restore

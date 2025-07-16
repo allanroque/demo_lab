@@ -1,0 +1,107 @@
+---
+- name: Gather system data and create HTML report
+  hosts: Streaming_Infrastucture
+  gather_facts: true
+  become: true
+
+  vars:
+    outdir: /var/tmp/reports
+    nav_width: 200px
+    failed_style: 'color:orangered'
+    missing_style: 'color:grey;text-decoration:line-through'
+    report_type:
+    backup_file: "/backup/data_{{ inventory_hostname }}_{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '') }}.xfsdump"
+
+  pre_tasks:
+       
+    - name: Set initial job status to catch missing/failed hosts
+      set_fact:
+        job_success: False
+        missing: True
+    
+    - name: Gather server facts and weed out unavailable hosts
+      setup:
+    
+    - name: Set remaining hosts as not missing
+      set_fact:
+        missing: False
+
+  tasks:
+
+    - name: Create output folder
+      file:
+        path: "{{ outdir }}"
+        state: directory
+
+    - name: Gather storage capacity
+      shell: df -h --total | grep total
+      register: storageusage
+      when: report_type == "Storage Usage" or report_type == "All"
+
+    - name: Gather OS version
+      command: cat /etc/redhat-release
+      register: os_version
+      when: report_type == "OS Versions" or report_type == "All"
+
+    - name: Gather list of users
+      command: cat /etc/passwd
+      register: userlist
+      when: report_type == "User List" or report_type == "All"
+
+    - name: Verify the dumps
+      ansible.builtin.command:
+        cmd: ls -l "{{ backup_file | dirname }}"
+      register: dir_listing
+
+  post_tasks:
+
+    - name: Mark surviving hosts as successful
+      set_fact:
+        job_success: True
+
+    # Saving curated lists of hosts as localhost facts, to make the Jinja loops easier to read in the template. 
+    # To use: hostvars['localhost']['success_list'] , etc
+    - name: Save summary facts under Ansible controller
+      delegate_to: localhost
+      delegate_facts: True
+      run_once: yes
+      set_fact:
+        date_str: "{{ date }}_{{ hms }}"
+        date_str_pretty: "{{ date }} {{ hms_pretty }}"
+        kernels_list: '{{ hostvars | json_query(kernel_query) | unique | sort }}'
+        success_list: '{{ hostvars | dict2items | json_query(success_query) }}'
+        failed_list: '{{ hostvars | dict2items | json_query(failed_query) }}'
+        missing_list: '{{ hostvars | dict2items | json_query(missing_query) }}'
+      vars:
+        kernel_query: "*.ansible_kernel"
+        success_query: "[?value.job_success==`true`].key"
+        failed_query: "[?value.job_success==`false` && value.missing==`false`].key"
+        missing_query: "[?value.missing==`true`].key"
+        date: "{{ '%Y-%m-%d' | strftime }}"
+        hms_pretty: "{{ '%H:%M:%S' | strftime }}"
+        hms: "{{ hms_pretty | replace(':','-') }}"
+
+    - name: Save job report
+      template:
+        src: job_report_master.j2
+        dest: "{{ outdir }}/report.html"
+      delegate_to: server01.aroque.com.br
+
+    - name: Copy application files to shared storage
+      ansible.builtin.copy:
+        src: "{{ outdir }}/report.html"
+        dest: /var/www/html/index.html
+        remote_src: true
+        force: yes
+      delegate_to: server01.aroque.com.br
+      notify: restart httpd
+
+  handlers:
+    - name: restart httpd
+      systemd:
+        name: httpd
+        state: restarted
+        enabled: yes
+      delegate_to: server01.aroque.com.br
+
+

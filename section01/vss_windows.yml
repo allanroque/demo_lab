@@ -1,0 +1,51 @@
+---
+- name: Execute a VSS PowerShell script on Windows
+  hosts: domain_controllers
+
+  tasks:
+    - name: Create a shadow copy for the C drive
+      win_shell: |
+        vssadmin create shadow /for=C:
+      register: shadow_create_output
+
+    - name: Display shadow copy creation output
+      debug:
+        msg: "{{ shadow_create_output.stdout_lines }}"
+
+    - name: Retrieve details of all shadow copies
+      win_shell: |
+        vssadmin list shadows
+      register: shadow_list_output
+
+    - name: Parse and display shadow copy details
+      debug:
+        msg: >
+          {%- for line in shadow_list_output.stdout_lines -%}
+          {{ line }}
+          {%- endfor -%}
+
+    # - name: List all shadow copies (summary)
+    #   win_shell: |
+    #     $output = vssadmin list shadows
+    #     $output -split "`n`n" | ForEach-Object {
+    #       if ($_ -match "Shadow Copy ID:\s*({[0-9a-fA-F-]+})") {
+    #         $id = $matches[1]
+    #       }
+    #       if ($_ -match "Creation Time:\s*(.+)") {
+    #         $time = $matches[1]
+    #       }
+    #       if ($_ -match "Volume Name:\s*(.+)") {
+    #         $volume = $matches[1]
+    #       }
+    #       if ($id) {
+    #         Write-Output "Shadow Copy ID: $id"
+    #         Write-Output "Volume Name: $volume"
+    #         Write-Output "Creation Time: $time"
+    #         Write-Output "-----------------------------"
+    #       }
+    #     }
+    #   register: shadow_summary_output
+
+    # - name: Display summarized shadow copies
+    #   debug:
+    #     msg: "{{ shadow_summary_output.stdout_lines }}"

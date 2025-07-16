@@ -1,0 +1,42 @@
+---
+- name: Check and Report Windows Updates
+  hosts: domain_controllers
+  gather_facts: true
+
+  vars:
+    report_path: 'C:\ansible_reports'
+    update_category:
+    
+  tasks:
+  
+    - name: Create site directory structure
+      ansible.windows.win_file:
+        path: "{{ report_path }}"
+        state: directory
+
+    - name: Show us the updates
+      debug:
+        msg: "{{ update_category }}"
+
+    - name: Check available updates
+      ansible.windows.win_updates:
+        category_names: 
+         - "{{ update_category | default(omit) }}"
+        state: searched
+      register: update_result
+     
+    - name: Generate HTML report
+      ansible.windows.win_template:
+        src: templates/win_patch_report.html.j2
+        dest: C:\inetpub\wwwroot\index.html
+        force: true  
+      notify: restart_iis
+      vars:
+        updates: "{{ update_result.updates }}" 
+        
+  handlers:
+    - name: restart_iis
+      ansible.windows.win_service:
+        name: W3Svc
+        state: restarted
+        start_mode: auto
