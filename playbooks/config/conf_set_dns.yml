@@ -1,0 +1,30 @@
+---
+- name: Configurar DNS em interfaces gerenciadas pelo NetworkManager (RHEL 9)
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    dns_servers: "8.8.8.8"
+    target_interface: "{{ ansible_default_ipv4.interface }}"
+
+  tasks:
+
+    - name: Garantir que o NetworkManager está instalado e ativo
+      service:
+        name: NetworkManager
+        state: started
+        enabled: true
+
+    - name: Configurar DNS via nmcli (modo estático manual)
+      shell: |
+        nmcli connection modify "$(nmcli -t -f NAME,DEVICE connection show --active | grep {{ target_interface }} | cut -d: -f1)" \
+        ipv4.ignore-auto-dns yes \
+        ipv4.dns "{{ dns_servers | join(' ') }}"
+      args:
+        warn: false
+
+    - name: Reiniciar a conexão de rede para aplicar DNS
+      shell: |
+        nmcli connection down "$(nmcli -t -f NAME,DEVICE connection show --active | grep {{ target_interface }} | cut -d: -f1)" && \
+        nmcli connection up "$(nmcli -t -f NAME,DEVICE connection show --active | grep {{ target_interface }} | cut -d: -f1)"
