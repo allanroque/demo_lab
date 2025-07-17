@@ -16,6 +16,10 @@
         state: started
         enabled: true
 
+    - name: Verificar tipo de dns_servers
+      debug:
+        msg: "dns_servers={{ dns_servers }}, tipo={{ dns_servers | type_debug }}"
+
     - name: Configurar DNS via nmcli (modo estático manual)
       shell: |
         nmcli connection modify "$(nmcli -t -f NAME,DEVICE connection show --active | grep {{ target_interface }} | cut -d: -f1)" \
