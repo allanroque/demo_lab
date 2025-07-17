@@ -21,8 +21,6 @@
         nmcli connection modify "$(nmcli -t -f NAME,DEVICE connection show --active | grep {{ target_interface }} | cut -d: -f1)" \
         ipv4.ignore-auto-dns yes \
         ipv4.dns "{{ dns_servers | join(' ') }}"
-      args:
-        warn: false
 
     - name: Reiniciar a conexão de rede para aplicar DNS
       shell: |
