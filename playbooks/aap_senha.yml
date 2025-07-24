@@ -1,0 +1,20 @@
+---
+- name: Testar vazamento de credenciais no log
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    org_name: "TesteOrgAAP"
+#    controller_hostname: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+#    controller_username: "{{ lookup('env', 'CONTROLLER_USER') }}"
+#    controller_password: "{{ lookup('env', 'CONTROLLER_PASS') }}"
+
+  tasks:
+
+    - name: Criar organização via API do AAP
+      awx.awx.organization:
+        name: "{{ org_name }}"
+        description: "Criado para teste de vazamento"
+        validate_certs: false
+#      no_log: true
