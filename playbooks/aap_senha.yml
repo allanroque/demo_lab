@@ -13,8 +13,9 @@
   tasks:
 
     - name: Criar organização via API do AAP
-      awx.awx.organization:
+      ansible.controller.organization:
         name: "{{ org_name }}"
         description: "Criado para teste de vazamento"
+        state: present
         validate_certs: false
 #      no_log: true
