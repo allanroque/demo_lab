@@ -2,6 +2,7 @@
 - name: Coleta de variáveis e configuração do Ansible em execução
   hosts: localhost
   gather_facts: no
+  connection: local
   tasks:
 
     - name: Mostrar variáveis de ambiente do container
