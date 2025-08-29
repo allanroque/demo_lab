@@ -11,7 +11,7 @@
         dest: /etc/yum.repos.d/grafana.repo
 
     - name: Install unzip package
-      yum:
+      ansible.builtin.dnf:
         name: promtail
         state: present
       when: ansible_os_family == 'RedHat'

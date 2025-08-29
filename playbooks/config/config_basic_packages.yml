@@ -15,19 +15,21 @@
       - tar
       - unzip
       - audit
+      - cockpit
+      - insights-client
     pkgs_to_remove:
       - telnet
 
   tasks:
     - name: Install important packages
-      yum:
+      ansible.builtin.dnf:
         name: "{{ pkgs_to_install }}"
         state: present
       tags: 
         - packages
 
     - name: Remove unwanted packages
-      yum:
+      ansible.builtin.dnf:
         name: "{{ pkgs_to_remove }}"
         state: absent
       tags:

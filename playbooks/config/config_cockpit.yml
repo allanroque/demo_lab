@@ -3,11 +3,11 @@
   hosts: all
   become: true
   tasks:
-    - name: Install Cockpit
-      dnf:
-        name: cockpit
-        state: present
-      when: inventory_hostname != 'ipamonit.aroque.com.br'
+#    - name: Install Cockpit
+#      ansible.builtin.dnf:
+#        name: cockpit
+#        state: present
+#      when: inventory_hostname != 'ipamonit.aroque.com.br'
 
     - name: Enable and start Cockpit socket
       systemd:
